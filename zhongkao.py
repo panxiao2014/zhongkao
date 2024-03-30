@@ -5,9 +5,11 @@ import config.config as GlobalConfig
 from utils.studentName import StudentName
 from validators.genderVal import GenderValidator
 from utils.scoreStats import ScoreStats
+from utils.schoolStats import SchoolStats
 
 stuNameData = StudentName()
 scoreStats = ScoreStats()
+schoolStats = SchoolStats()
 
 stuSet = stuNameData.cerateStudentSet(GlobalConfig.StudentTotal)
 
