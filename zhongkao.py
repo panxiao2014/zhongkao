@@ -4,10 +4,12 @@ from examples import custom_style_2
 import config.config as GlobalConfig
 from utils.studentName import StudentName
 from validators.genderVal import GenderValidator
+from utils.scoreStats import ScoreStats
 
 stuNameData = StudentName()
+scoreStats = ScoreStats()
 
-stuSet = stuNameData.cerateStudentSet(GlobalConfig.TotalStudent)
+stuSet = stuNameData.cerateStudentSet(GlobalConfig.StudentTotal)
 
 questions = [
     {
