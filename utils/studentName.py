@@ -9,19 +9,23 @@ class StudentName:
             fContent = f.readlines()
             for line in fContent:
                 name,sex = line.split(',')
-                self.nameDatabase.append({"name": name, "gender": sex.rstrip()})
+                self.nameDatabase.append({"姓名": name, "性别": sex.rstrip()})
 
         random.shuffle(self.nameDatabase)
         return
 
-    def listAll(self):
+    def printAll(self):
         for item in self.nameList:
             print(item)
 
         return
     
-    def cerateStudentSet(self, stuNumber):
-        for i in range(0, stuNumber-1):
+    def listAll(self):
+        return self.nameList
+    
+    
+    def cerateStudentNames(self, stuNumber):
+        for i in range(0, stuNumber):
             self.nameList.append(self.nameDatabase[i])
 
         return self.nameList

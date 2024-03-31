@@ -6,34 +6,37 @@ from utils.studentName import StudentName
 from validators.genderVal import GenderValidator
 from utils.scoreStats import ScoreStats
 from utils.schoolStats import SchoolStats
+from studentSet import StudentSet
 
 stuNameData = StudentName()
 scoreStats = ScoreStats()
 schoolStats = SchoolStats()
 
-stuSet = stuNameData.cerateStudentSet(GlobalConfig.StudentTotal)
+stuNames = stuNameData.cerateStudentNames(GlobalConfig.StudentTotal)
 
-questions = [
-    {
-        'type': 'input',
-        'name': 'myName',
-        'message': '请输入你的名字：'
-    }
-]
+stuSet = StudentSet(stuNames)
+stuSet.generateScores()
+stuSet.showScoreHist("语文")
+stuSet.showScoreHist("数学")
+#stuSet.printAll()
 
-myName = prompt(questions)
+# questions = [
+#     {
+#         'type': 'input',
+#         'name': 'myName',
+#         'message': '请输入你的名字：'
+#     }
+# ]
 
-questions = [
-    {
-        'type': 'input',
-        'name': 'myGender',
-        'message': '请输入你的性别：',
-        'validate': GenderValidator
-    }
-]
+# myName = prompt(questions)
 
-myGender = prompt(questions)
+# questions = [
+#     {
+#         'type': 'input',
+#         'name': 'myGender',
+#         'message': '请输入你的性别：',
+#         'validate': GenderValidator
+#     }
+# ]
 
-stuNameData.addStudent(myName['myName'], myGender['myGender'])
-
-stuNameData.listAll()
+# myGender = prompt(questions)
