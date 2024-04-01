@@ -21,6 +21,11 @@ stuSet.showScoreHist("数学")
 stuSet.showScoreHist("英语")
 stuSet.showScoreHist("物理")
 stuSet.showScoreHist("化学")
+stuSet.showScoreHist("体育")
+stuSet.showScoreHist("道法")
+stuSet.showScoreHist("历史")
+stuSet.showScoreHist("生物")
+stuSet.showScoreHist("地理")
 #stuSet.printAll()
 
 # questions = [

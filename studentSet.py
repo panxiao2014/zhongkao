@@ -16,9 +16,11 @@ class StudentSet:
         self.stuNumber = self.dfStudents.shape[0]
         return
     
+
     def printAll(self):
         print(self.dfStudents)
         return
+    
     
     def generateScores(self):
         dfChinese = self.scoreGen.scoreChinese(self.stuNumber)
@@ -35,7 +37,23 @@ class StudentSet:
 
         dfChemistry = self.scoreGen.scoreChemistry(self.stuNumber)
         self.dfStudents = pd.concat([self.dfStudents, dfChemistry], axis=1)
+
+        dfPE = self.scoreGen.scorePE(self.stuNumber)
+        self.dfStudents = pd.concat([self.dfStudents, dfPE], axis=1)
+
+        dfPolitics = self.scoreGen.scorePolitics(self.stuNumber)
+        self.dfStudents = pd.concat([self.dfStudents, dfPolitics], axis=1)
+
+        dfHistory = self.scoreGen.scoreHistory(self.stuNumber)
+        self.dfStudents = pd.concat([self.dfStudents, dfHistory], axis=1)
+    
+        dfBiology = self.scoreGen.scoreBiology(self.stuNumber)
+        self.dfStudents = pd.concat([self.dfStudents, dfBiology], axis=1)
+
+        dfGeography = self.scoreGen.scoreGeography(self.stuNumber)
+        self.dfStudents = pd.concat([self.dfStudents, dfGeography], axis=1)
         return
+    
     
     def showScoreHist(self, courseName):
         plt.hist(self.dfStudents[courseName], bins=30, histtype="bar", edgecolor='black', linewidth=1.2)

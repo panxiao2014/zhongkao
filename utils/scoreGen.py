@@ -3,7 +3,11 @@
 #物理：满分70
 #化学：满分50
 #体育：满分60
-#道法，历史，生物，地理：20, 16, 12, 8, 0
+#道法，历史，生物，地理:
+#  80-100: 20
+#  70-79:  16
+#  60-69:  12
+#  0-59:   8
 #满分: 710
 
 import random
@@ -29,7 +33,7 @@ ScoreControl = {
         "Max": 150,
         "Min": 40,
         "Mean": 105,
-        "Scale": 40,
+        "Scale": 5,
         "Skew": 0
     },
 
@@ -37,7 +41,7 @@ ScoreControl = {
         "Max": 148,
         "Min": 30,
         "Mean": 120,
-        "Scale": 30,
+        "Scale": 6,
         "Skew": 0
     },
 
@@ -45,15 +49,55 @@ ScoreControl = {
         "Max": 70,
         "Min": 20,
         "Mean": 50,
-        "Scale": 30,
-        "Skew": 0
+        "Scale": 7,
+        "Skew": 1
     },
 
     "化学": {
         "Max": 50,
         "Min": 20,
         "Mean": 35,
-        "Scale": 20,
+        "Scale": 4,
+        "Skew": 0
+    },
+
+    "体育": {
+        "Max": 60,
+        "Min": 30,
+        "Mean": 48,
+        "Scale": 14,
+        "Skew": 0
+    },
+
+    "道法": {
+        "Max": 100,
+        "Min": 30,
+        "Mean": 85,
+        "Scale": 15,
+        "Skew": 0
+    },
+
+    "历史": {
+        "Max": 100,
+        "Min": 20,
+        "Mean": 75,
+        "Scale": 15,
+        "Skew": 0
+    },
+
+    "生物": {
+        "Max": 100,
+        "Min": 20,
+        "Mean": 71,
+        "Scale": 18,
+        "Skew": 0
+    },
+
+    "地理": {
+        "Max": 100,
+        "Min": 20,
+        "Mean": 78,
+        "Scale": 19,
         "Skew": 0
     }
 }
@@ -72,6 +116,11 @@ class ScoreGen:
         dfCourse[course] = dfCourse[course].astype(int)
         dfCourse[course] = np.where(dfCourse[course]<ScoreControl[course]["Min"], ScoreControl[course]["Min"], dfCourse[course])
         dfCourse[course] = np.where(dfCourse[course]>ScoreControl[course]["Max"], ScoreControl[course]["Max"], dfCourse[course])
+
+        if(course == "道法" or course == "历史" or course == "生物" or course == "地理"):
+            dfCourse[course] = np.where((dfCourse[course]>=80) & (dfCourse[course]<=100), 20,
+                                        np.where((dfCourse[course]>=70) & (dfCourse[course]<=79), 16,
+                                        np.where((dfCourse[course]>=60) & (dfCourse[course]<=69), 12, 8)))
         
         return dfCourse
           
@@ -94,3 +143,23 @@ class ScoreGen:
 
     def scoreChemistry(self, stuNumber):
         return self.scoreGen("化学", stuNumber)
+
+
+    def scorePE(self, stuNumber):
+        return self.scoreGen("体育", stuNumber)
+    
+
+    def scorePolitics(self, stuNumber):
+        return self.scoreGen("道法", stuNumber)
+    
+
+    def scoreHistory(self, stuNumber):
+        return self.scoreGen("历史", stuNumber)
+    
+
+    def scoreBiology(self, stuNumber):
+        return self.scoreGen("生物", stuNumber)
+    
+
+    def scoreGeography(self, stuNumber):
+        return self.scoreGen("地理", stuNumber)
