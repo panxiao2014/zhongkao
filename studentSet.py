@@ -26,6 +26,15 @@ class StudentSet:
 
         dfMath = self.scoreGen.scoreMath(self.stuNumber)
         self.dfStudents = pd.concat([self.dfStudents, dfMath], axis=1)
+
+        dfEnglish = self.scoreGen.scoreEnglish(self.stuNumber)
+        self.dfStudents = pd.concat([self.dfStudents, dfEnglish], axis=1)
+
+        dfPhysics = self.scoreGen.scorePhysics(self.stuNumber)
+        self.dfStudents = pd.concat([self.dfStudents, dfPhysics], axis=1)
+
+        dfChemistry = self.scoreGen.scoreChemistry(self.stuNumber)
+        self.dfStudents = pd.concat([self.dfStudents, dfChemistry], axis=1)
         return
     
     def showScoreHist(self, courseName):

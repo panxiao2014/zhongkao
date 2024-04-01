@@ -11,48 +11,86 @@ import numpy as np
 import pandas as pd
 import scipy.stats as ss
 
-MaxScore = 149
-MinScore = 30
 
 MeanRange = 10
 ScaleRange = 4
-SkewRange = 1
+SkewRange = 0
 
-ChineseMean = 110
-ChineseScale = 15
-ChineseSkew = -1
+ScoreControl = {
+    "语文": {
+        "Max": 145,
+        "Min": 30,
+        "Mean": 110,
+        "Scale": 15,
+        "Skew": 0
+    },
 
-MathMean = 115
-MathScale = 30
-MathSkew = -2
+    "数学": {
+        "Max": 150,
+        "Min": 40,
+        "Mean": 105,
+        "Scale": 40,
+        "Skew": 0
+    },
+
+    "英语": {
+        "Max": 148,
+        "Min": 30,
+        "Mean": 120,
+        "Scale": 30,
+        "Skew": 0
+    },
+
+    "物理": {
+        "Max": 70,
+        "Min": 20,
+        "Mean": 50,
+        "Scale": 30,
+        "Skew": 0
+    },
+
+    "化学": {
+        "Max": 50,
+        "Min": 20,
+        "Mean": 35,
+        "Scale": 20,
+        "Skew": 0
+    }
+}
 
 class ScoreGen:
     def __init__(self):
         return
     
-    def scoreChinese(self, stuNumber):
-        scores = ss.pearson3.rvs(loc=random.randint(ChineseMean-MeanRange, ChineseMean+MeanRange), 
-                                 scale=random.randint(ChineseScale-ScaleRange, ChineseScale+ScaleRange), 
-                                 skew=random.randint(ChineseSkew-SkewRange, ChineseSkew+SkewRange),  
+    def scoreGen(self, course, stuNumber):
+        scores = ss.pearson3.rvs(loc=random.randint(ScoreControl[course]["Mean"]-MeanRange, ScoreControl[course]["Mean"]+MeanRange), 
+                                 scale=random.randint(ScoreControl[course]["Scale"]-ScaleRange, ScoreControl[course]["Scale"]+ScaleRange), 
+                                 skew=random.randint(ScoreControl[course]["Skew"]-SkewRange, ScoreControl[course]["Skew"]+SkewRange),  
                                 size=stuNumber)
         
-        dfChinese = pd.DataFrame({"语文": scores})
-        dfChinese["语文"] = dfChinese["语文"].astype(int)
-        dfChinese["语文"] = np.where(dfChinese["语文"]<MinScore, MinScore, dfChinese["语文"])
-        dfChinese["语文"] = np.where(dfChinese["语文"]>MaxScore, MaxScore, dfChinese["语文"])
+        dfCourse = pd.DataFrame({course: scores})
+        dfCourse[course] = dfCourse[course].astype(int)
+        dfCourse[course] = np.where(dfCourse[course]<ScoreControl[course]["Min"], ScoreControl[course]["Min"], dfCourse[course])
+        dfCourse[course] = np.where(dfCourse[course]>ScoreControl[course]["Max"], ScoreControl[course]["Max"], dfCourse[course])
         
-        return dfChinese
+        return dfCourse
+          
+    
+    def scoreChinese(self, stuNumber):        
+        return self.scoreGen("语文", stuNumber)
     
     
     def scoreMath(self, stuNumber):
-        scores = ss.pearson3.rvs(loc=random.randint(MathMean-MeanRange, MathMean+MeanRange), 
-                                 scale=random.randint(MathScale-ScaleRange, MathScale+ScaleRange), 
-                                 skew=random.randint(MathSkew-SkewRange, MathSkew+SkewRange),  
-                                size=stuNumber)
-        
-        dfChinese = pd.DataFrame({"数学": scores})
-        dfChinese["数学"] = dfChinese["数学"].astype(int)
-        dfChinese["数学"] = np.where(dfChinese["数学"]<MinScore, MinScore, dfChinese["数学"])
-        dfChinese["数学"] = np.where(dfChinese["数学"]>MaxScore, MaxScore, dfChinese["数学"])
-        
-        return dfChinese
+        return self.scoreGen("数学", stuNumber)
+    
+
+    def scoreEnglish(self, stuNumber):
+        return self.scoreGen("英语", stuNumber)
+    
+
+    def scorePhysics(self, stuNumber):
+        return self.scoreGen("物理", stuNumber)
+    
+
+    def scoreChemistry(self, stuNumber):
+        return self.scoreGen("化学", stuNumber)

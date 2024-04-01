@@ -18,6 +18,9 @@ stuSet = StudentSet(stuNames)
 stuSet.generateScores()
 stuSet.showScoreHist("语文")
 stuSet.showScoreHist("数学")
+stuSet.showScoreHist("英语")
+stuSet.showScoreHist("物理")
+stuSet.showScoreHist("化学")
 #stuSet.printAll()
 
 # questions = [
