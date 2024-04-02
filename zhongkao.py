@@ -26,6 +26,7 @@ stuSet.showScoreHist("道法")
 stuSet.showScoreHist("历史")
 stuSet.showScoreHist("生物")
 stuSet.showScoreHist("地理")
+stuSet.showScoreHist("总分")
 #stuSet.printAll()
 
 # questions = [

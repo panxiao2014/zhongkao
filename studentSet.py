@@ -52,6 +52,8 @@ class StudentSet:
 
         dfGeography = self.scoreGen.scoreGeography(self.stuNumber)
         self.dfStudents = pd.concat([self.dfStudents, dfGeography], axis=1)
+
+        self.dfStudents["总分"] = self.dfStudents[["语文", "数学", "英语", "物理", "化学", "体育", "道法", "历史", "生物", "地理"]].sum(axis=1)
         return
     
     
