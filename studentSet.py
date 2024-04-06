@@ -14,6 +14,14 @@ class StudentSet:
         self.dfStudents = pd.DataFrame(stuNames)
         self.stuNumber = self.dfStudents.shape[0]
         self.scoreGen = ScoreGen(self.stuNumber)
+        self.myName = ""
+        #append a tag so my name know who is myself in the dataframe:
+        self.myNameTag = "(mySelf)"
+
+        #init score degrade:
+        self.scoreCounts = pd.DataFrame(columns = ['score', 'count'])
+        self.scoreHighGate = 655
+        self.scoreLowGate = 400
         return
     
 
@@ -22,9 +30,26 @@ class StudentSet:
         return
     
 
-    def appendMyself(self, myDict):
-        myDf = pd.DataFrame(myDict)
-        print(myDf)
+    def appendMyself(self, mySelf):
+        self.myName = mySelf["姓名"]
+        mySelf["姓名"] = "{}{}".format(self.myName, self.myNameTag)
+
+        #change each item in dict into list, so it can be added to the dataframe:
+        mySelf["姓名"] = [mySelf["姓名"]]
+        mySelf["性别"] = [mySelf["性别"]]
+        mySelf["语文"] = [mySelf["语文"]]
+        mySelf["数学"] = [mySelf["数学"]]
+        mySelf["英语"] = [mySelf["英语"]]
+        mySelf["物理"] = [mySelf["物理"]]
+        mySelf["化学"] = [mySelf["化学"]]
+        mySelf["体育"] = [mySelf["体育"]]
+        mySelf["道法"] = [mySelf["道法"]]
+        mySelf["历史"] = [mySelf["历史"]]
+        mySelf["生物"] = [mySelf["生物"]]
+        mySelf["地理"] = [mySelf["地理"]]
+        mySelf["总分"] = [mySelf["总分"]]
+
+        myDf = pd.DataFrame(mySelf)
         self.dfStudents = pd.concat([self.dfStudents, myDf], ignore_index = True) 
         return
     
@@ -63,10 +88,33 @@ class StudentSet:
         self.dfStudents["总分"] = self.dfStudents[["语文", "数学", "英语", "物理", "化学", "体育", "道法", "历史", "生物", "地理"]].sum(axis=1)
         return
     
+
+    def generateScoreCount(self):
+        scoreStats = self.dfStudents["总分"].value_counts().sort_index(ascending=False)
+
+        #filter score below low gate:
+        scoreStats = scoreStats[scoreStats.index >= self.scoreLowGate]
+
+        self.scoreCounts['score'] = scoreStats.index
+        self.scoreCounts['count'] = scoreStats.values
+
+        #merge socres above high gate:
+        self.scoreCounts.loc[self.scoreCounts['score'].between(self.scoreHighGate, 710), 'score'] = self.scoreHighGate
+        self.scoreCounts = self.scoreCounts.groupby('score', as_index=False).agg({'count': 'sum'})
+
+
+        self.scoreCounts = self.scoreCounts.sort_values(by='score', ascending=False)
+        return
+    
     
     def showScoreHist(self, courseName):
         plt.hist(self.dfStudents[courseName], bins=30, histtype="bar", edgecolor='black', linewidth=1.2)
         plt.xlabel("{}得分".format(courseName), fontproperties=fontP)
         plt.ylabel('人数', fontproperties=fontP)
         plt.show()
+        return
+    
+
+    def showScoreCount(self):
+        print(self.scoreCounts)
         return

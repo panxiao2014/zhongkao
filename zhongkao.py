@@ -3,6 +3,7 @@ from examples import custom_style_2
 
 import config.config as GlobalConfig
 from utils.studentName import StudentName
+from validators.nameVal import NameValidator
 from validators.genderVal import GenderValidator
 from validators.scoreVal import ScoreValidator150
 from validators.scoreVal import ScoreValidator70
@@ -37,13 +38,12 @@ questions = [
     {
         'type': 'input',
         'name': '姓名',
-        'message': '请输入你的名字：'
+        'message': '请输入你的名字：',
+        'validate': NameValidator
     }
 ]
 
 mySelf = prompt(questions)
-#append a tag so we know who is myself in the dataframe:
-mySelf["姓名"] = "{}(mySelf)".format(mySelf["姓名"])
 
 questions = [
     {
@@ -115,7 +115,7 @@ questions = [
     {
         'type': 'input',
         'name': '体育',
-        'message': '请输入你的化学得分(0-60)：',
+        'message': '请输入你的体育得分(0-60)：',
         'validate': ScoreValidator60
     }
 ]
@@ -166,22 +166,25 @@ questions = [
 
 mySelf.update(prompt(questions))
 
-mySelf["语文"] = [int(mySelf["语文"])]
-mySelf["数学"] = [int(mySelf["数学"])]
-mySelf["英语"] = [int(mySelf["英语"])]
-mySelf["物理"] = [int(mySelf["物理"])]
-mySelf["化学"] = [int(mySelf["化学"])]
-mySelf["体育"] = [int(mySelf["体育"])]
-mySelf["道法"] = [int(mySelf["道法"])]
-mySelf["历史"] = [int(mySelf["历史"])]
-mySelf["生物"] = [int(mySelf["生物"])]
-mySelf["地理"] = [int(mySelf["地理"])]
+mySelf["语文"] = int(mySelf["语文"])
+mySelf["数学"] = int(mySelf["数学"])
+mySelf["英语"] = int(mySelf["英语"])
+mySelf["物理"] = int(mySelf["物理"])
+mySelf["化学"] = int(mySelf["化学"])
+mySelf["体育"] = int(mySelf["体育"])
+mySelf["道法"] = int(mySelf["道法"])
+mySelf["历史"] = int(mySelf["历史"])
+mySelf["生物"] = int(mySelf["生物"])
+mySelf["地理"] = int(mySelf["地理"])
 
-mySelf["总分"] = mySelf["语文"][0] + mySelf["数学"][0] + mySelf["英语"][0] + mySelf["物理"][0] + mySelf["化学"][0] + mySelf["体育"][0]\
-                   + mySelf["道法"][0] + mySelf["历史"][0] + mySelf["生物"][0] + mySelf["地理"][0]
-mySelf["姓名"] = [mySelf["姓名"]]
-mySelf["性别"] = [mySelf["性别"]]
+mySelf["总分"] = mySelf["语文"] + mySelf["数学"] + mySelf["英语"] + mySelf["物理"] + mySelf["化学"] + mySelf["体育"]\
+                   + mySelf["道法"] + mySelf["历史"] + mySelf["生物"] + mySelf["地理"]
 
 stuSet.appendMyself(mySelf)
 
 stuSet.printAll()
+
+#generate score count:
+stuSet.generateScoreCount()
+stuSet.showScoreCount()
+
