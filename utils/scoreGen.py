@@ -103,14 +103,15 @@ ScoreControl = {
 }
 
 class ScoreGen:
-    def __init__(self):
+    def __init__(self, stuNumber):
+        self.stuNumber = stuNumber
         return
     
-    def scoreGen(self, course, stuNumber):
+    def scoreGen(self, course):
         scores = ss.pearson3.rvs(loc=random.randint(ScoreControl[course]["Mean"]-MeanRange, ScoreControl[course]["Mean"]+MeanRange), 
                                  scale=random.randint(ScoreControl[course]["Scale"]-ScaleRange, ScoreControl[course]["Scale"]+ScaleRange), 
                                  skew=random.randint(ScoreControl[course]["Skew"]-SkewRange, ScoreControl[course]["Skew"]+SkewRange),  
-                                size=stuNumber)
+                                size=self.stuNumber)
         
         dfCourse = pd.DataFrame({course: scores})
         dfCourse[course] = dfCourse[course].astype(int)
@@ -125,41 +126,41 @@ class ScoreGen:
         return dfCourse
           
     
-    def scoreChinese(self, stuNumber):        
-        return self.scoreGen("语文", stuNumber)
+    def scoreChinese(self):        
+        return self.scoreGen("语文")
     
     
-    def scoreMath(self, stuNumber):
-        return self.scoreGen("数学", stuNumber)
+    def scoreMath(self):
+        return self.scoreGen("数学")
     
 
-    def scoreEnglish(self, stuNumber):
-        return self.scoreGen("英语", stuNumber)
+    def scoreEnglish(self):
+        return self.scoreGen("英语")
     
 
-    def scorePhysics(self, stuNumber):
-        return self.scoreGen("物理", stuNumber)
+    def scorePhysics(self):
+        return self.scoreGen("物理")
     
 
-    def scoreChemistry(self, stuNumber):
-        return self.scoreGen("化学", stuNumber)
+    def scoreChemistry(self):
+        return self.scoreGen("化学")
 
 
-    def scorePE(self, stuNumber):
-        return self.scoreGen("体育", stuNumber)
+    def scorePE(self):
+        return self.scoreGen("体育")
     
 
-    def scorePolitics(self, stuNumber):
-        return self.scoreGen("道法", stuNumber)
+    def scorePolitics(self):
+        return self.scoreGen("道法")
     
 
-    def scoreHistory(self, stuNumber):
-        return self.scoreGen("历史", stuNumber)
+    def scoreHistory(self):
+        return self.scoreGen("历史")
     
 
-    def scoreBiology(self, stuNumber):
-        return self.scoreGen("生物", stuNumber)
+    def scoreBiology(self):
+        return self.scoreGen("生物")
     
 
-    def scoreGeography(self, stuNumber):
-        return self.scoreGen("地理", stuNumber)
+    def scoreGeography(self):
+        return self.scoreGen("地理")
