@@ -19,7 +19,7 @@ class StudentSet:
         self.myNameTag = "(mySelf)"
 
         #init score degrade:
-        self.scoreCounts = pd.DataFrame(columns = ['score', 'count'])
+        self.scoreCounts = pd.DataFrame(columns = ['分数', '人数'])
         self.scoreHighGate = 655
         self.scoreLowGate = 400
         return
@@ -95,16 +95,23 @@ class StudentSet:
         #filter score below low gate:
         scoreStats = scoreStats[scoreStats.index >= self.scoreLowGate]
 
-        self.scoreCounts['score'] = scoreStats.index
-        self.scoreCounts['count'] = scoreStats.values
+        self.scoreCounts['分数'] = scoreStats.index
+        self.scoreCounts['人数'] = scoreStats.values
 
         #merge socres above high gate:
-        self.scoreCounts.loc[self.scoreCounts['score'].between(self.scoreHighGate, 710), 'score'] = self.scoreHighGate
-        self.scoreCounts = self.scoreCounts.groupby('score', as_index=False).agg({'count': 'sum'})
+        self.scoreCounts.loc[self.scoreCounts['分数'].between(self.scoreHighGate, 710), '分数'] = self.scoreHighGate
+        self.scoreCounts = self.scoreCounts.groupby('分数', as_index=False).agg({'人数': 'sum'})
 
 
-        self.scoreCounts = self.scoreCounts.sort_values(by='score', ascending=False)
+        self.scoreCounts = self.scoreCounts.sort_values(by='分数', ascending=False)
         return
+    
+
+    def generateCumulativeScore(self):
+        self.scoreCounts['累计'] = self.scoreCounts['人数'].cumsum()
+        self.scoreCounts.iloc[0, self.scoreCounts.columns.get_loc('累计')] = self.scoreCounts.iloc[0, self.scoreCounts.columns.get_loc('人数')]
+        return
+
     
     
     def showScoreHist(self, courseName):

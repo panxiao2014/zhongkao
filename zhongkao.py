@@ -184,7 +184,8 @@ stuSet.appendMyself(mySelf)
 
 stuSet.printAll()
 
-#generate score count:
+#generate score count and cumulative sum of each score:
 stuSet.generateScoreCount()
+stuSet.generateCumulativeScore()
 stuSet.showScoreCount()
 
