@@ -24,41 +24,41 @@ ScoreControl = {
     "语文": {
         "Max": 145,
         "Min": 30,
-        "Mean": 110,
-        "Scale": 15,
-        "Skew": 0
+        "Mean": 119,
+        "Scale": 24,
+        "Skew": -2
     },
 
     "数学": {
         "Max": 150,
         "Min": 40,
-        "Mean": 105,
-        "Scale": 5,
-        "Skew": 0
+        "Mean": 111,
+        "Scale": 17,
+        "Skew": -1
     },
 
     "英语": {
         "Max": 148,
         "Min": 30,
         "Mean": 120,
-        "Scale": 6,
-        "Skew": 0
+        "Scale": 16,
+        "Skew": -1
     },
 
     "物理": {
         "Max": 70,
         "Min": 20,
-        "Mean": 50,
+        "Mean": 55,
         "Scale": 7,
-        "Skew": 1
+        "Skew": -1
     },
 
     "化学": {
         "Max": 50,
         "Min": 20,
-        "Mean": 35,
+        "Mean": 55,
         "Scale": 4,
-        "Skew": 0
+        "Skew": -1
     },
 
     "体育": {
@@ -66,7 +66,7 @@ ScoreControl = {
         "Min": 30,
         "Mean": 48,
         "Scale": 14,
-        "Skew": 0
+        "Skew": -1
     },
 
     "道法": {
@@ -74,7 +74,7 @@ ScoreControl = {
         "Min": 30,
         "Mean": 85,
         "Scale": 15,
-        "Skew": 0
+        "Skew": -1
     },
 
     "历史": {
@@ -90,7 +90,7 @@ ScoreControl = {
         "Min": 20,
         "Mean": 71,
         "Scale": 18,
-        "Skew": 0
+        "Skew": -1
     },
 
     "地理": {
@@ -98,7 +98,7 @@ ScoreControl = {
         "Min": 20,
         "Mean": 78,
         "Scale": 19,
-        "Skew": 0
+        "Skew": -1
     }
 }
 

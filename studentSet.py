@@ -1,8 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
+from tabulate import tabulate
 
-from utils.studentName import StudentName
 from utils.scoreGen import ScoreGen
 
 fontP = font_manager.FontProperties()
@@ -123,5 +123,5 @@ class StudentSet:
     
 
     def showScoreCount(self):
-        print(self.scoreCounts)
+        print(tabulate(self.scoreCounts, showindex="never", headers="keys", tablefmt="double_grid"))
         return

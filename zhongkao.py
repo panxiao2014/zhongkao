@@ -32,7 +32,7 @@ stuSet.generateScores()
 # stuSet.showScoreHist("历史")
 # stuSet.showScoreHist("生物")
 # stuSet.showScoreHist("地理")
-# stuSet.showScoreHist("总分")
+stuSet.showScoreHist("总分")
 
 questions = [
     {
@@ -55,6 +55,21 @@ questions = [
 ]
 
 mySelf.update(prompt(questions))
+
+questions = [
+    {
+        'type': 'list',
+        'name': 'chooseScoreGenType',
+        'message': '请选择本次中考成绩产生方式:',
+        'choices': [
+            '电脑随机生成',
+            '手动输入'
+        ]
+    }
+]
+
+myScoreType = prompt(questions)
+print(myScoreType)
 
 questions = [
     {
