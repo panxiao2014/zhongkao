@@ -15,6 +15,12 @@ import numpy as np
 import pandas as pd
 import scipy.stats as ss
 
+from PyInquirer import prompt
+from validators.scoreVal import ScoreValidator150
+from validators.scoreVal import ScoreValidator70
+from validators.scoreVal import ScoreValidator50
+from validators.scoreVal import ScoreValidator60
+from validators.scoreVal import ScoreValidator20
 
 MeanRange = 10
 ScaleRange = 4
@@ -164,3 +170,151 @@ class ScoreGen:
 
     def scoreGeography(self):
         return self.scoreGen("地理")
+    
+
+    def genMyScoreAuto(self):
+        myScore = {}
+        myScore["语文"] = random.randint(115, 130)
+        myScore["数学"] = random.randint(110, 125)
+        myScore["英语"] = random.randint(125, 140)
+        myScore["物理"] = random.randint(58, 69)
+        myScore["化学"] = random.randint(39, 49)
+        myScore["体育"] = random.randint(50, 60)
+        myScore["道法"] = random.choice([20, 16])
+        myScore["历史"] = random.choice([20, 16])
+        myScore["生物"] = random.choice([20, 16])
+        myScore["地理"] = random.choice([20, 16])
+        myScore["总分"] = myScore["语文"] + myScore["数学"] + myScore["英语"] + myScore["物理"] + myScore["化学"] + myScore["体育"]\
+                + myScore["道法"] + myScore["历史"] + myScore["生物"] + myScore["地理"]
+        return myScore
+    
+
+    def genMyScoreManual(self):
+        myScore = {}
+
+        questions = [
+            {
+                'type': 'input',
+                'name': '语文',
+                'message': '请输入你的语文得分(0-150)：',
+                'validate': ScoreValidator150
+            }
+        ]
+
+        myScore.update(prompt(questions))
+
+        questions = [
+            {
+                'type': 'input',
+                'name': '数学',
+                'message': '请输入你的数学得分(0-150)：',
+                'validate': ScoreValidator150
+            }
+        ]
+
+        myScore.update(prompt(questions))
+
+        questions = [
+            {
+                'type': 'input',
+                'name': '英语',
+                'message': '请输入你的英语得分(0-150)：',
+                'validate': ScoreValidator150
+            }
+        ]
+
+        myScore.update(prompt(questions))
+
+        questions = [
+            {
+                'type': 'input',
+                'name': '物理',
+                'message': '请输入你的物理得分(0-70)：',
+                'validate': ScoreValidator70
+            }
+        ]
+
+        myScore.update(prompt(questions))
+
+        questions = [
+            {
+                'type': 'input',
+                'name': '化学',
+                'message': '请输入你的化学得分(0-50)：',
+                'validate': ScoreValidator50
+            }
+        ]
+
+        myScore.update(prompt(questions))
+
+        questions = [
+            {
+                'type': 'input',
+                'name': '体育',
+                'message': '请输入你的体育得分(0-60)：',
+                'validate': ScoreValidator60
+            }
+        ]
+
+        myScore.update(prompt(questions))
+
+        questions = [
+            {
+                'type': 'input',
+                'name': '道法',
+                'message': '请输入你的道法得分(20, 16, 12, 8)：',
+                'validate': ScoreValidator20
+            }
+        ]
+
+        myScore.update(prompt(questions))
+
+        questions = [
+            {
+                'type': 'input',
+                'name': '历史',
+                'message': '请输入你的历史得分(20, 16, 12, 8)：',
+                'validate': ScoreValidator20
+            }
+        ]
+
+        myScore.update(prompt(questions))
+
+        questions = [
+            {
+                'type': 'input',
+                'name': '生物',
+                'message': '请输入你的生物得分(20, 16, 12, 8)：',
+                'validate': ScoreValidator20
+            }
+        ]
+
+        myScore.update(prompt(questions))
+
+        questions = [
+            {
+                'type': 'input',
+                'name': '地理',
+                'message': '请输入你的地理得分(20, 16, 12, 8)：',
+                'validate': ScoreValidator20
+            }
+        ]
+
+        myScore.update(prompt(questions))
+
+        myScore["语文"] = int(myScore["语文"])
+        myScore["数学"] = int(myScore["数学"])
+        myScore["英语"] = int(myScore["英语"])
+        myScore["物理"] = int(myScore["物理"])
+        myScore["化学"] = int(myScore["化学"])
+        myScore["体育"] = int(myScore["体育"])
+        myScore["道法"] = int(myScore["道法"])
+        myScore["历史"] = int(myScore["历史"])
+        myScore["生物"] = int(myScore["生物"])
+        myScore["地理"] = int(myScore["地理"])
+
+        myScore["总分"] = myScore["语文"] + myScore["数学"] + myScore["英语"] + myScore["物理"] + myScore["化学"] + myScore["体育"]\
+                        + myScore["道法"] + myScore["历史"] + myScore["生物"] + myScore["地理"]
+        return myScore
+        
+            

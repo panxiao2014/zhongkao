@@ -125,3 +125,29 @@ class StudentSet:
     def showScoreCount(self):
         print(tabulate(self.scoreCounts, showindex="never", headers="keys", tablefmt="double_grid"))
         return
+    
+
+    def generateMyScore(self, scoreType):
+        if(scoreType == "电脑随机生成"):
+            return self.scoreGen.genMyScoreAuto()
+        elif(scoreType == "手动输入"):
+            return self.scoreGen.genMyScoreManual()
+        else:
+            print("Unknow score gen type: {}".format(scoreType))
+
+
+    def displayMyScoreAndRank(self):
+        myData = self.dfStudents.loc[self.dfStudents["姓名"] == (self.myName + self.myNameTag)]
+        myData = myData.drop('姓名', axis=1)
+        myData = myData.drop('性别', axis=1)
+
+        print("\n")
+        print("{}同学, 你本次中考的成绩为：".format(self.myName))
+        print(tabulate(myData, showindex="never", headers="keys", tablefmt="double_grid"))
+
+        totalScore = myData.iloc[0]["总分"]
+        scoreRank = self.scoreCounts.loc[self.scoreCounts["分数"] == totalScore, "累计"].values[0]
+
+        print("\n")
+        print("{}分的累计人数为：{}人".format(totalScore, scoreRank))
+        return
