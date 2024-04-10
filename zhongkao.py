@@ -14,20 +14,7 @@ scoreStats = ScoreStats()
 schoolStats = SchoolStats()
 
 stuNames = stuNameData.cerateStudentNames(GlobalConfig.StudentTotal)
-
 stuSet = StudentSet(stuNames)
-stuSet.generateScores()
-# stuSet.showScoreHist("语文")
-# stuSet.showScoreHist("数学")
-# stuSet.showScoreHist("英语")
-# stuSet.showScoreHist("物理")
-# stuSet.showScoreHist("化学")
-# stuSet.showScoreHist("体育")
-# stuSet.showScoreHist("道法")
-# stuSet.showScoreHist("历史")
-# stuSet.showScoreHist("生物")
-# stuSet.showScoreHist("地理")
-stuSet.showScoreHist("总分")
 
 questions = [
     {
@@ -68,15 +55,29 @@ myScore = stuSet.generateMyScore(myScoreType["chooseScoreGenType"])
 
 mySelf.update(myScore)
 
-
-
+#generate all students score:
+stuSet.generateScores()
 stuSet.appendMyself(mySelf)
+
+# stuSet.showScoreHist("语文")
+# stuSet.showScoreHist("数学")
+# stuSet.showScoreHist("英语")
+# stuSet.showScoreHist("物理")
+# stuSet.showScoreHist("化学")
+# stuSet.showScoreHist("体育")
+# stuSet.showScoreHist("道法")
+# stuSet.showScoreHist("历史")
+# stuSet.showScoreHist("生物")
+# stuSet.showScoreHist("地理")
+#stuSet.showScoreHist("总分")
+
+
+
+
 
 #stuSet.printAll()
 
-#generate score count and cumulative sum of each score:
-stuSet.generateScoreCount()
-stuSet.generateCumulativeScore()
+
 
 stuSet.displayMyScoreAndRank()
 

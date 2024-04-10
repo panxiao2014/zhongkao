@@ -19,7 +19,7 @@ class StudentSet:
         self.myNameTag = "(mySelf)"
 
         #init score degrade:
-        self.scoreCounts = pd.DataFrame(columns = ['分数', '人数'])
+        self.dfScoreCounts = pd.DataFrame(columns = ['分数', '人数'])
         self.scoreHighGate = 655
         self.scoreLowGate = 400
         return
@@ -53,8 +53,32 @@ class StudentSet:
         self.dfStudents = pd.concat([self.dfStudents, myDf], ignore_index = True) 
         return
     
+
+    def generateScoreCount(self):
+        scoreStats = self.dfStudents["总分"].value_counts().sort_index(ascending=False)
+
+        #filter score below low gate:
+        scoreStats = scoreStats[scoreStats.index >= self.scoreLowGate]
+
+        self.dfScoreCounts['分数'] = scoreStats.index
+        self.dfScoreCounts['人数'] = scoreStats.values
+
+        #merge socres above high gate:
+        self.dfScoreCounts.loc[self.dfScoreCounts['分数'].between(self.scoreHighGate, 710), '分数'] = self.scoreHighGate
+        self.dfScoreCounts = self.dfScoreCounts.groupby('分数', as_index=False).agg({'人数': 'sum'})
+
+
+        self.dfScoreCounts = self.dfScoreCounts.sort_values(by='分数', ascending=False)
+        return
     
-    def generateScores(self):
+
+    def generateCumulativeScore(self):
+        self.dfScoreCounts['累计'] = self.dfScoreCounts['人数'].cumsum()
+        self.dfScoreCounts.iloc[0, self.dfScoreCounts.columns.get_loc('累计')] = self.dfScoreCounts.iloc[0, self.dfScoreCounts.columns.get_loc('人数')]
+        return
+    
+
+    def generateEachAndTotalScores(self):
         dfChinese = self.scoreGen.scoreChinese()
         self.dfStudents = pd.concat([self.dfStudents, dfChinese], axis=1)
 
@@ -87,31 +111,32 @@ class StudentSet:
 
         self.dfStudents["总分"] = self.dfStudents[["语文", "数学", "英语", "物理", "化学", "体育", "道法", "历史", "生物", "地理"]].sum(axis=1)
         return
+     
     
+    def generateScores(self):
+        #generate each student's score, including each subject and total score:
+        self.generateEachAndTotalScores()
 
-    def generateScoreCount(self):
-        scoreStats = self.dfStudents["总分"].value_counts().sort_index(ascending=False)
+        #generate score count:
+        self.generateScoreCount()
 
-        #filter score below low gate:
-        scoreStats = scoreStats[scoreStats.index >= self.scoreLowGate]
+        #generate cumulative count for each score:
+        self.generateCumulativeScore()
 
-        self.scoreCounts['分数'] = scoreStats.index
-        self.scoreCounts['人数'] = scoreStats.values
+        #check score distribution until we got a good one:
+        isGoodScoreDistribution = self.scoreGen.isGoodScoreDistribution(self.dfScoreCounts[["分数", "累计"]].copy())
+        while(isGoodScoreDistribution != True):
+            self.dfStudents = self.dfStudents.drop(["语文", "数学", "英语", "物理", "化学", "体育", "道法", "历史", "生物", "地理", "总分"], axis=1)
+            del self.dfScoreCounts
+            self.dfScoreCounts = pd.DataFrame(columns = ['分数', '人数'])
 
-        #merge socres above high gate:
-        self.scoreCounts.loc[self.scoreCounts['分数'].between(self.scoreHighGate, 710), '分数'] = self.scoreHighGate
-        self.scoreCounts = self.scoreCounts.groupby('分数', as_index=False).agg({'人数': 'sum'})
+            self.generateEachAndTotalScores()
+            self.generateScoreCount()
+            self.generateCumulativeScore()
 
-
-        self.scoreCounts = self.scoreCounts.sort_values(by='分数', ascending=False)
+            isGoodScoreDistribution = self.scoreGen.isGoodScoreDistribution(self.dfScoreCounts[["分数", "累计"]].copy())            
         return
     
-
-    def generateCumulativeScore(self):
-        self.scoreCounts['累计'] = self.scoreCounts['人数'].cumsum()
-        self.scoreCounts.iloc[0, self.scoreCounts.columns.get_loc('累计')] = self.scoreCounts.iloc[0, self.scoreCounts.columns.get_loc('人数')]
-        return
-
     
     
     def showScoreHist(self, courseName):
@@ -123,7 +148,7 @@ class StudentSet:
     
 
     def showScoreCount(self):
-        print(tabulate(self.scoreCounts, showindex="never", headers="keys", tablefmt="double_grid"))
+        print(tabulate(self.dfScoreCounts, showindex="never", headers="keys", tablefmt="double_grid"))
         return
     
 
@@ -146,7 +171,7 @@ class StudentSet:
         print(tabulate(myData, showindex="never", headers="keys", tablefmt="double_grid"))
 
         totalScore = myData.iloc[0]["总分"]
-        scoreRank = self.scoreCounts.loc[self.scoreCounts["分数"] == totalScore, "累计"].values[0]
+        scoreRank = self.dfScoreCounts.loc[self.dfScoreCounts["分数"] == totalScore, "累计"].values[0]
 
         print("\n")
         print("{}分的累计人数为：{}人".format(totalScore, scoreRank))

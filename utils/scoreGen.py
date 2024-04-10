@@ -26,6 +26,11 @@ MeanRange = 10
 ScaleRange = 4
 SkewRange = 0
 
+#based on 2023 score stats, define score and number of students as high score students:
+HighScoreGate = 620
+HighScoreStudents = 4000
+HighScoretudentsVariance = 200
+
 ScoreControl = {
     "语文": {
         "Max": 145,
@@ -316,5 +321,9 @@ class ScoreGen:
         myScore["总分"] = myScore["语文"] + myScore["数学"] + myScore["英语"] + myScore["物理"] + myScore["化学"] + myScore["体育"]\
                         + myScore["道法"] + myScore["历史"] + myScore["生物"] + myScore["地理"]
         return myScore
-        
-            
+    
+
+    def isGoodScoreDistribution(self, dfTotalScore):
+        numHighScoreStudents = dfTotalScore.loc[dfTotalScore["分数"]==HighScoreGate, "累计"].values[0]
+        print("numHighScoreStudents: {}".format(numHighScoreStudents))
+        return (numHighScoreStudents <= (HighScoreStudents+HighScoretudentsVariance) and numHighScoreStudents >= (HighScoreStudents-HighScoretudentsVariance))
