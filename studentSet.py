@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
 from tabulate import tabulate
+from progress.spinner import LineSpinner
 
 from utils.scoreGen import ScoreGen
 
@@ -114,6 +115,9 @@ class StudentSet:
      
     
     def generateScores(self):
+        print("\n")
+        bar = LineSpinner('中考成绩统计中，请稍后。。。')
+
         #generate each student's score, including each subject and total score:
         self.generateEachAndTotalScores()
 
@@ -134,7 +138,9 @@ class StudentSet:
             self.generateScoreCount()
             self.generateCumulativeScore()
 
-            isGoodScoreDistribution = self.scoreGen.isGoodScoreDistribution(self.dfScoreCounts[["分数", "累计"]].copy())            
+            isGoodScoreDistribution = self.scoreGen.isGoodScoreDistribution(self.dfScoreCounts[["分数", "累计"]].copy())
+
+            bar.next()     
         return
     
     

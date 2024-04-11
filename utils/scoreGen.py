@@ -36,7 +36,7 @@ ScoreControl = {
         "Max": 145,
         "Min": 30,
         "Mean": 119,
-        "Scale": 24,
+        "Scale": 30,
         "Skew": -2
     },
 
@@ -44,7 +44,7 @@ ScoreControl = {
         "Max": 150,
         "Min": 40,
         "Mean": 111,
-        "Scale": 17,
+        "Scale": 30,
         "Skew": -1
     },
 
@@ -52,7 +52,7 @@ ScoreControl = {
         "Max": 148,
         "Min": 30,
         "Mean": 120,
-        "Scale": 16,
+        "Scale": 30,
         "Skew": -1
     },
 
@@ -325,5 +325,4 @@ class ScoreGen:
 
     def isGoodScoreDistribution(self, dfTotalScore):
         numHighScoreStudents = dfTotalScore.loc[dfTotalScore["分数"]==HighScoreGate, "累计"].values[0]
-        print("numHighScoreStudents: {}".format(numHighScoreStudents))
         return (numHighScoreStudents <= (HighScoreStudents+HighScoretudentsVariance) and numHighScoreStudents >= (HighScoreStudents-HighScoretudentsVariance))

@@ -70,11 +70,6 @@ stuSet.appendMyself(mySelf)
 # stuSet.showScoreHist("生物")
 # stuSet.showScoreHist("地理")
 #stuSet.showScoreHist("总分")
-
-
-
-
-
 #stuSet.printAll()
 
 
