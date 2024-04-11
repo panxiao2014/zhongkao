@@ -4,6 +4,7 @@ from matplotlib import font_manager
 from tabulate import tabulate
 from progress.spinner import LineSpinner
 
+import config.config as GlobalConfig
 from utils.scoreGen import ScoreGen
 
 fontP = font_manager.FontProperties()
@@ -21,8 +22,6 @@ class StudentSet:
 
         #init score degrade:
         self.dfScoreCounts = pd.DataFrame(columns = ['分数', '人数'])
-        self.scoreHighGate = 655
-        self.scoreLowGate = 400
         return
     
 
@@ -59,13 +58,13 @@ class StudentSet:
         scoreStats = self.dfStudents["总分"].value_counts().sort_index(ascending=False)
 
         #filter score below low gate:
-        scoreStats = scoreStats[scoreStats.index >= self.scoreLowGate]
+        scoreStats = scoreStats[scoreStats.index >= GlobalConfig.ScoreLowGate]
 
         self.dfScoreCounts['分数'] = scoreStats.index
         self.dfScoreCounts['人数'] = scoreStats.values
 
         #merge socres above high gate:
-        self.dfScoreCounts.loc[self.dfScoreCounts['分数'].between(self.scoreHighGate, 710), '分数'] = self.scoreHighGate
+        self.dfScoreCounts.loc[self.dfScoreCounts['分数'].between(GlobalConfig.ScoreHighGate, 710), '分数'] = GlobalConfig.ScoreHighGate
         self.dfScoreCounts = self.dfScoreCounts.groupby('分数', as_index=False).agg({'人数': 'sum'})
 
 
@@ -177,6 +176,8 @@ class StudentSet:
         print(tabulate(myData, showindex="never", headers="keys", tablefmt="double_grid"))
 
         totalScore = myData.iloc[0]["总分"]
+        if(totalScore > GlobalConfig.ScoreHighGate):
+            totalScore = GlobalConfig.ScoreHighGate
         scoreRank = self.dfScoreCounts.loc[self.dfScoreCounts["分数"] == totalScore, "累计"].values[0]
 
         print("\n")
