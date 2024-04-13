@@ -20,7 +20,7 @@ questions = [
     {
         'type': 'input',
         'name': '姓名',
-        'message': '请输入你的名字：',
+        'message': '请输入您的名字：',
         'validate': NameValidator
     }
 ]
@@ -31,7 +31,7 @@ questions = [
     {
         'type': 'input',
         'name': '性别',
-        'message': '请输入你的性别：',
+        'message': '请输入您的性别：',
         'validate': GenderValidator
     }
 ]
@@ -72,9 +72,9 @@ stuSet.appendMyself(mySelf)
 #stuSet.showScoreHist("总分")
 #stuSet.printAll()
 
-
-
 stuSet.displayMyScoreAndRank()
+
+stuSet.sortStudentsByScore()
 
 stuSet.showScoreCount()
 

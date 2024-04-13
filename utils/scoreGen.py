@@ -36,7 +36,7 @@ ScoreControl = {
         "Max": 145,
         "Min": 30,
         "Mean": 119,
-        "Scale": 30,
+        "Scale": 35,
         "Skew": -2
     },
 
@@ -76,7 +76,7 @@ ScoreControl = {
         "Max": 60,
         "Min": 30,
         "Mean": 48,
-        "Scale": 14,
+        "Scale": 25,
         "Skew": -1
     },
 

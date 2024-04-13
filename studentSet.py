@@ -172,7 +172,7 @@ class StudentSet:
         myData = myData.drop('性别', axis=1)
 
         print("\n")
-        print("{}同学, 你本次中考的成绩为：".format(self.myName))
+        print("{}同学, 您本次中考的成绩为：".format(self.myName))
         print(tabulate(myData, showindex="never", headers="keys", tablefmt="double_grid"))
 
         totalScore = myData.iloc[0]["总分"]
@@ -182,4 +182,8 @@ class StudentSet:
 
         print("\n")
         print("{}分的累计人数为：{}人".format(totalScore, scoreRank))
+        return
+    
+
+    def sortStudentsByScore(self):
         return
