@@ -11,7 +11,9 @@ from studentSet import StudentSet
 
 stuNameData = StudentName()
 scoreStats = ScoreStats()
+
 schoolStats = SchoolStats()
+schoolStats.setupStats()
 
 stuNames = stuNameData.cerateStudentNames(GlobalConfig.StudentTotal)
 stuSet = StudentSet(stuNames)
@@ -42,7 +44,7 @@ questions = [
     {
         'type': 'list',
         'name': 'chooseScoreGenType',
-        'message': '请选择本次中考成绩产生方式:',
+        'message': '请选择您本次中考成绩产生方式:',
         'choices': [
             '电脑随机生成',
             '手动输入'
@@ -73,6 +75,10 @@ stuSet.appendMyself(mySelf)
 #stuSet.printAll()
 
 stuSet.displayMyScoreAndRank()
+
+#获取重高线：
+privilegeScoreGate = stuSet.getPrivilegeScoreGate(schoolStats)
+stuSet.displayPrivilegeScoreGate()
 
 stuSet.sortStudentsByScore()
 

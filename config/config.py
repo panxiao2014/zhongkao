@@ -1,5 +1,8 @@
-StudentTotal = 150000    #2023年全市中考报名人数为15.02万人
-StudentQuota = 700    #全市普通高中下达计划共97803人
-StudentProvinceQuota = 3500   #全市省级示范性普通高中（含参照省级示范性普通高中管理的公办、民办普通高中）学位供给大幅增加，招生计划达1358个班66483人
+StudentTotal = 50000    #约为5+2区域报名考生
 ScoreHighGate = 655  #655及以上得分合并统计总人数
 ScoreLowGate = 400   #400分以下忽略统计
+
+#based on 2023 score stats, define score and number of students as high score students:
+HighScoreGate = 560
+HighScoreStudents = 13605
+HighScoretudentsVariance = 5000

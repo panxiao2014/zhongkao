@@ -21,15 +21,12 @@ from validators.scoreVal import ScoreValidator70
 from validators.scoreVal import ScoreValidator50
 from validators.scoreVal import ScoreValidator60
 from validators.scoreVal import ScoreValidator20
+import config.config as GlobalConfig
 
 MeanRange = 10
 ScaleRange = 4
 SkewRange = 0
 
-#based on 2023 score stats, define score and number of students as high score students:
-HighScoreGate = 620
-HighScoreStudents = 4000
-HighScoretudentsVariance = 200
 
 ScoreControl = {
     "语文": {
@@ -37,23 +34,23 @@ ScoreControl = {
         "Min": 30,
         "Mean": 119,
         "Scale": 35,
-        "Skew": -2
+        "Skew": -1
     },
 
     "数学": {
         "Max": 150,
         "Min": 40,
         "Mean": 111,
-        "Scale": 30,
-        "Skew": -1
+        "Scale": 35,
+        "Skew": -2
     },
 
     "英语": {
         "Max": 148,
         "Min": 30,
         "Mean": 120,
-        "Scale": 30,
-        "Skew": -1
+        "Scale": 35,
+        "Skew": -2
     },
 
     "物理": {
@@ -324,5 +321,5 @@ class ScoreGen:
     
 
     def isGoodScoreDistribution(self, dfTotalScore):
-        numHighScoreStudents = dfTotalScore.loc[dfTotalScore["分数"]==HighScoreGate, "累计"].values[0]
-        return (numHighScoreStudents <= (HighScoreStudents+HighScoretudentsVariance) and numHighScoreStudents >= (HighScoreStudents-HighScoretudentsVariance))
+        numHighScoreStudents = dfTotalScore.loc[dfTotalScore["分数"]==GlobalConfig.HighScoreGate, "累计"].values[0]
+        return (numHighScoreStudents <= (GlobalConfig.HighScoreStudents+GlobalConfig.HighScoretudentsVariance) and numHighScoreStudents >= (GlobalConfig.HighScoreStudents-GlobalConfig.HighScoretudentsVariance))

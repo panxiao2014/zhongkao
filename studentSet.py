@@ -6,6 +6,7 @@ from progress.spinner import LineSpinner
 
 import config.config as GlobalConfig
 from utils.scoreGen import ScoreGen
+from utils.schoolStats import SchoolStats
 
 fontP = font_manager.FontProperties()
 fontP.set_family('SimHei')
@@ -22,6 +23,9 @@ class StudentSet:
 
         #init score degrade:
         self.dfScoreCounts = pd.DataFrame(columns = ['分数', '人数'])
+
+        #重高线
+        self.privilegeScoreGate = 0
         return
     
 
@@ -187,3 +191,16 @@ class StudentSet:
 
     def sortStudentsByScore(self):
         return
+    
+
+    def getPrivilegeScoreGate(self, schoolStats):
+        secondRoundStuQuota = schoolStats.getSecondRoundStuQuota()
+        dfScoreCountTemp = self.dfScoreCounts[self.dfScoreCounts["累计"] >= secondRoundStuQuota]
+        
+        self.privilegeScoreGate = dfScoreCountTemp["分数"].max()
+        return self.privilegeScoreGate
+    
+
+    def displayPrivilegeScoreGate(self):
+        print("\n")
+        print("本次中考的重点线为：{}".format(self.privilegeScoreGate))
