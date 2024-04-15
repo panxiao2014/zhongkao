@@ -20,6 +20,7 @@ class StudentSet:
         self.myName = ""
         #append a tag so my name know who is myself in the dataframe:
         self.myNameTag = "(mySelf)"
+        self.myTotalScore = 0
 
         #init score degrade:
         self.dfScoreCounts = pd.DataFrame(columns = ['分数', '人数'])
@@ -37,6 +38,7 @@ class StudentSet:
     def appendMyself(self, mySelf):
         self.myName = mySelf["姓名"]
         mySelf["姓名"] = "{}{}".format(self.myName, self.myNameTag)
+        self.myTotalScore = mySelf["总分"]
 
         #change each item in dict into list, so it can be added to the dataframe:
         mySelf["姓名"] = [mySelf["姓名"]]
@@ -54,8 +56,12 @@ class StudentSet:
         mySelf["总分"] = [mySelf["总分"]]
 
         myDf = pd.DataFrame(mySelf)
-        self.dfStudents = pd.concat([self.dfStudents, myDf], ignore_index = True) 
+        self.dfStudents = pd.concat([self.dfStudents, myDf], ignore_index = True)
         return
+    
+
+    def getMyTotalScore(self):
+        return self.myTotalScore
     
 
     def generateScoreCount(self):
@@ -182,6 +188,8 @@ class StudentSet:
         totalScore = myData.iloc[0]["总分"]
         if(totalScore > GlobalConfig.ScoreHighGate):
             totalScore = GlobalConfig.ScoreHighGate
+        if(totalScore < GlobalConfig.ScoreLowGate):
+            totalScore = GlobalConfig.ScoreLowGate
         scoreRank = self.dfScoreCounts.loc[self.dfScoreCounts["分数"] == totalScore, "累计"].values[0]
 
         print("\n")

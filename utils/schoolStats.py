@@ -23,6 +23,13 @@ class SchoolStats:
         sumStu3 = dfNormalPrivate["5+2区域计划"].sum()
         
         self.numSecondRoundStuQuota = sumStu1 + sumStu2 + sumStu3
+
+        #根据学校的录取位次排序：
+        self.dfSchools = self.dfSchools.sort_values(by="录取位次", ascending=True)
+
+        #去掉没有录取位次记录的学校：
+        self.dfSchools = self.dfSchools[self.dfSchools["录取位次"] != 0]
+        print(self.dfSchools)
         return
     
 

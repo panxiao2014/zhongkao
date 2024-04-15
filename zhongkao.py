@@ -1,3 +1,4 @@
+import sys
 from PyInquirer import prompt
 from examples import custom_style_2
 
@@ -79,6 +80,15 @@ stuSet.displayMyScoreAndRank()
 #获取重高线：
 privilegeScoreGate = stuSet.getPrivilegeScoreGate(schoolStats)
 stuSet.displayPrivilegeScoreGate()
+
+#检查自己是否可以参加第二批次志愿填报：
+myTotalScore = stuSet.getMyTotalScore()
+if(myTotalScore < privilegeScoreGate):
+    print("\n")
+    print("很遗憾，您本次中考没有达到重点线，不能参加第二批次志愿填报")
+    input()
+    sys.exit()
+
 
 stuSet.sortStudentsByScore()
 
