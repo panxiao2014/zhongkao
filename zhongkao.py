@@ -1,4 +1,5 @@
 import sys
+from os import system, name
 from PyInquirer import prompt
 from examples import custom_style_2
 
@@ -9,6 +10,15 @@ from validators.genderVal import GenderValidator
 from utils.scoreStats import ScoreStats
 from utils.schoolStats import SchoolStats
 from studentSet import StudentSet
+
+
+if name == 'nt':
+    _ = system('cls')
+else:
+    _ = system('clear')
+
+with open("data/banner.txt") as f:
+    print(f.read())
 
 stuNameData = StudentName()
 scoreStats = ScoreStats()
