@@ -14,12 +14,13 @@ class StudentName:
         random.shuffle(self.nameDatabase)
         return
 
+
     def printAll(self):
         for item in self.nameList:
             print(item)
-
         return
-    
+
+
     def listAll(self):
         return self.nameList
     
@@ -29,6 +30,7 @@ class StudentName:
             self.nameList.append(self.nameDatabase[i])
 
         return self.nameList
+
     
     def addStudent(self, stuName, stuGender):
         self.nameList.append({"name": stuName, "gender": stuGender})

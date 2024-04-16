@@ -29,7 +29,6 @@ class SchoolStats:
 
         #去掉没有录取位次记录的学校：
         self.dfSchools = self.dfSchools[self.dfSchools["录取位次"] != 0]
-        print(self.dfSchools)
         return
     
 

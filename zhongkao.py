@@ -12,6 +12,7 @@ from utils.schoolStats import SchoolStats
 from studentSet import StudentSet
 
 
+#############clear screen and show the banner:##################
 if name == 'nt':
     _ = system('cls')
 else:
@@ -19,6 +20,8 @@ else:
 
 with open("data/banner.txt") as f:
     print(f.read())
+################################################################
+
 
 stuNameData = StudentName()
 scoreStats = ScoreStats()
@@ -26,8 +29,11 @@ scoreStats = ScoreStats()
 schoolStats = SchoolStats()
 schoolStats.setupStats()
 
+#初始化学生，生成学生姓名，性别，类型（统招或调剂）
 stuNames = stuNameData.cerateStudentNames(GlobalConfig.StudentTotal)
 stuSet = StudentSet(stuNames)
+stuSet.categorizeStudent()
+stuSet.showStudents()
 
 questions = [
     {
@@ -68,23 +74,12 @@ myScore = stuSet.generateMyScore(myScoreType["chooseScoreGenType"])
 
 mySelf.update(myScore)
 
-#generate all students score:
+#生成所有学生的考试成绩：
 stuSet.generateScores()
 stuSet.appendMyself(mySelf)
 
-# stuSet.showScoreHist("语文")
-# stuSet.showScoreHist("数学")
-# stuSet.showScoreHist("英语")
-# stuSet.showScoreHist("物理")
-# stuSet.showScoreHist("化学")
-# stuSet.showScoreHist("体育")
-# stuSet.showScoreHist("道法")
-# stuSet.showScoreHist("历史")
-# stuSet.showScoreHist("生物")
-# stuSet.showScoreHist("地理")
-#stuSet.showScoreHist("总分")
-#stuSet.printAll()
 
+#显示我的成绩及排名：
 stuSet.displayMyScoreAndRank()
 
 #获取重高线：
@@ -100,7 +95,17 @@ if(myTotalScore < privilegeScoreGate):
     sys.exit()
 
 
-stuSet.sortStudentsByScore()
-
-stuSet.showScoreCount()
+# stuSet.showScoreHist("语文")
+# stuSet.showScoreHist("数学")
+# stuSet.showScoreHist("英语")
+# stuSet.showScoreHist("物理")
+# stuSet.showScoreHist("化学")
+# stuSet.showScoreHist("体育")
+# stuSet.showScoreHist("道法")
+# stuSet.showScoreHist("历史")
+# stuSet.showScoreHist("生物")
+# stuSet.showScoreHist("地理")
+#stuSet.showScoreHist("总分")
+#stuSet.showStudents()
+#stuSet.showScoreCount()
 

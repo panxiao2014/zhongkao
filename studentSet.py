@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib import font_manager
 from tabulate import tabulate
 from progress.spinner import LineSpinner
+import random
 
 import config.config as GlobalConfig
 from utils.scoreGen import ScoreGen
@@ -30,7 +31,21 @@ class StudentSet:
         return
     
 
-    def printAll(self):
+    #学生分类：统招或调剂
+    def categorizeStudent(self):
+        numLocalStudent = GlobalConfig.StudentTotal - GlobalConfig.EdgeStudentTotal
+        numEdgeStudent = GlobalConfig.EdgeStudentTotal
+
+        lst1 = ['统招' for _ in range(numLocalStudent)]
+        lst2 = ['调剂' for _ in range(numEdgeStudent)]
+
+        catList = lst1 + lst2
+        random.shuffle(catList)
+        self.dfStudents['类型'] = catList
+        return
+    
+
+    def showStudents(self):
         print(self.dfStudents)
         return
     
@@ -74,7 +89,7 @@ class StudentSet:
         self.dfScoreCounts['人数'] = scoreStats.values
 
         #merge socres above high gate:
-        self.dfScoreCounts.loc[self.dfScoreCounts['分数'].between(GlobalConfig.ScoreHighGate, 710), '分数'] = GlobalConfig.ScoreHighGate
+        self.dfScoreCounts.loc[self.dfScoreCounts['分数'].between(GlobalConfig.ScoreTopGate, 710), '分数'] = GlobalConfig.ScoreTopGate
         self.dfScoreCounts = self.dfScoreCounts.groupby('分数', as_index=False).agg({'人数': 'sum'})
 
 
@@ -186,18 +201,14 @@ class StudentSet:
         print(tabulate(myData, showindex="never", headers="keys", tablefmt="double_grid"))
 
         totalScore = myData.iloc[0]["总分"]
-        if(totalScore > GlobalConfig.ScoreHighGate):
-            totalScore = GlobalConfig.ScoreHighGate
+        if(totalScore > GlobalConfig.ScoreTopGate):
+            totalScore = GlobalConfig.ScoreTopGate
         if(totalScore < GlobalConfig.ScoreLowGate):
             totalScore = GlobalConfig.ScoreLowGate
         scoreRank = self.dfScoreCounts.loc[self.dfScoreCounts["分数"] == totalScore, "累计"].values[0]
 
         print("\n")
         print("{}分的累计人数为：{}人".format(totalScore, scoreRank))
-        return
-    
-
-    def sortStudentsByScore(self):
         return
     
 
