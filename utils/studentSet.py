@@ -15,9 +15,18 @@ fontP.set_size(14)
 
 class StudentSet:
     def __init__(self, stuNames):
+        #所有报考学生的记录：
         self.dfStudents = pd.DataFrame(stuNames)
+
+        #报考学生总数：
         self.stuNumber = self.dfStudents.shape[0]
+
+        #参加第二批次填报志愿的学生:
+        self.stuForSecondRoundNum = 0
+        self.dfStuForSecondRound = pd.DataFrame()
+
         self.scoreGen = ScoreGen(self.stuNumber)
+
         self.myName = ""
         #append a tag so my name know who is myself in the dataframe:
         self.myNameTag = "(mySelf)"
@@ -50,9 +59,14 @@ class StudentSet:
         return
     
 
+    def getStuForSecondRoundNum(self):
+        return self.stuForSecondRoundNum
+    
+
     def appendMyself(self, mySelf):
         self.myName = mySelf["姓名"]
         mySelf["姓名"] = "{}{}".format(self.myName, self.myNameTag)
+        mySelf["类型"] = "统招"
         self.myTotalScore = mySelf["总分"]
 
         #change each item in dict into list, so it can be added to the dataframe:
@@ -195,6 +209,7 @@ class StudentSet:
         myData = self.dfStudents.loc[self.dfStudents["姓名"] == (self.myName + self.myNameTag)]
         myData = myData.drop('姓名', axis=1)
         myData = myData.drop('性别', axis=1)
+        myData = myData.drop('类型', axis=1)
 
         print("\n")
         print("{}同学, 您本次中考的成绩为：".format(self.myName))
@@ -212,6 +227,7 @@ class StudentSet:
         return
     
 
+    #获取重高线：在一份一段表中，累计人数达到第二批所有需要通过考试录取的名额总数时，对应的分数即为重点线
     def getPrivilegeScoreGate(self, schoolStats):
         secondRoundStuQuota = schoolStats.getSecondRoundStuQuota()
         dfScoreCountTemp = self.dfScoreCounts[self.dfScoreCounts["累计"] >= secondRoundStuQuota]
@@ -223,3 +239,21 @@ class StudentSet:
     def displayPrivilegeScoreGate(self):
         print("\n")
         print("本次中考的重点线为：{}".format(self.privilegeScoreGate))
+
+
+    def trimDownStudents(self):
+        dfTemp = self.dfStudents.copy()
+        dfTemp = dfTemp.sort_values(by='总分', ascending=False)
+
+        #去掉省重线以下的学生：
+        dfTemp = dfTemp[dfTemp["总分"] >= self.privilegeScoreGate]
+
+        #去掉统招生中，拿到市指标的学生:
+        myName = "{}{}".format(self.myName, self.myNameTag)
+        dfStuWithCityQuota = dfTemp[(dfTemp["姓名"] != myName) & (dfTemp["类型"] == "统招")].sample(n=GlobalConfig.CityQuotaTotal)
+        dfTemp.drop(dfStuWithCityQuota.index, inplace=True)
+
+
+        self.dfStuForSecondRound = dfTemp.copy()
+        self.stuForSecondRoundNum = self.dfStuForSecondRound.shape[0]
+        return

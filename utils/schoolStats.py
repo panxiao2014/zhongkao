@@ -7,7 +7,7 @@ class SchoolStats:
         #第二批次所有需要通过考试录取的学生总数。包括：
         #市直属普高，公办：计划招生数
         #5+2普高，公办：计划招生数 - 指标到校数
-        #5+2普高，民办：计划招生数
+        #民办：计划招生数 - 民办校内指标到校
         self.numSecondRoundStuQuota = 0
         return
     
@@ -19,8 +19,8 @@ class SchoolStats:
         dfNormalPublic = self.dfSchools[(self.dfSchools["公办民办"]=="公办") & (self.dfSchools["学校性质"]=="5+2普高") & (self.dfSchools["级别"]=="省级示范")]
         sumStu2 = dfNormalPublic["5+2区域计划"].sum() - dfNormalPublic["指标到校"].sum()
         
-        dfNormalPrivate = self.dfSchools[(self.dfSchools["公办民办"]=="民办") & (self.dfSchools["学校性质"]=="5+2普高") & (self.dfSchools["级别"]=="省级示范")]
-        sumStu3 = dfNormalPrivate["5+2区域计划"].sum()
+        dfNormalPrivate = self.dfSchools[(self.dfSchools["公办民办"]=="民办") & (self.dfSchools["级别"]=="省级示范")]
+        sumStu3 = dfNormalPrivate["5+2区域计划"].sum() - dfNormalPrivate["民办校内指标到校"].sum()
         
         self.numSecondRoundStuQuota = sumStu1 + sumStu2 + sumStu3
 

@@ -9,7 +9,7 @@ from validators.nameVal import NameValidator
 from validators.genderVal import GenderValidator
 from utils.scoreStats import ScoreStats
 from utils.schoolStats import SchoolStats
-from studentSet import StudentSet
+from utils.studentSet import StudentSet
 
 
 #############clear screen and show the banner:##################
@@ -18,7 +18,7 @@ if name == 'nt':
 else:
     _ = system('clear')
 
-with open("data/banner.txt") as f:
+with open("config/banner.txt", encoding="utf8") as f:
     print(f.read())
 ################################################################
 
@@ -33,7 +33,7 @@ schoolStats.setupStats()
 stuNames = stuNameData.cerateStudentNames(GlobalConfig.StudentTotal)
 stuSet = StudentSet(stuNames)
 stuSet.categorizeStudent()
-stuSet.showStudents()
+#stuSet.showStudents()
 
 questions = [
     {
@@ -93,6 +93,12 @@ if(myTotalScore < privilegeScoreGate):
     print("很遗憾，您本次中考没有达到重点线，不能参加第二批次志愿填报")
     input()
     sys.exit()
+
+#去掉重高线以下，以及市指标到校生：
+stuSet.trimDownStudents()
+
+print("\n")
+print("参加第二批次网上志愿填报的学生共有：{}名".format(stuSet.getStuForSecondRoundNum()))
 
 
 # stuSet.showScoreHist("语文")
