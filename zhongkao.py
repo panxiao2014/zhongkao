@@ -1,4 +1,5 @@
 import sys
+import time
 from os import system, name
 from PyInquirer import prompt
 from examples import custom_style_2
@@ -99,6 +100,16 @@ stuSet.trimDownStudents()
 
 print("\n")
 print("参加第二批次网上志愿填报的学生共有：{}名".format(stuSet.getStuForSecondRoundNum()))
+
+time.sleep(1)
+print("\n")
+print("即将进入第二批次志愿填报阶段，按任意键继续。。。")
+input()
+
+
+#根据自己排名列出推荐学校:
+dfRecommendSchool = schoolStats.recommendSchool(stuSet.getMyScoreRank())
+print(dfRecommendSchool)
 
 
 # stuSet.showScoreHist("语文")

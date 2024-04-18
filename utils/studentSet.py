@@ -31,6 +31,7 @@ class StudentSet:
         #append a tag so my name know who is myself in the dataframe:
         self.myNameTag = "(mySelf)"
         self.myTotalScore = 0
+        self.myScoreRank = 0
 
         #init score degrade:
         self.dfScoreCounts = pd.DataFrame(columns = ['分数', '人数'])
@@ -68,6 +69,14 @@ class StudentSet:
         mySelf["姓名"] = "{}{}".format(self.myName, self.myNameTag)
         mySelf["类型"] = "统招"
         self.myTotalScore = mySelf["总分"]
+
+        #获取自己的得分排名：
+        scoreLevel = self.myTotalScore
+        if(scoreLevel > GlobalConfig.ScoreTopGate):
+            scoreLevel = GlobalConfig.ScoreTopGate
+        if(scoreLevel < GlobalConfig.ScoreLowGate):
+            scoreLevel = GlobalConfig.ScoreLowGate
+        self.myScoreRank = self.dfScoreCounts.loc[self.dfScoreCounts["分数"] == scoreLevel, "累计"].values[0]  
 
         #change each item in dict into list, so it can be added to the dataframe:
         mySelf["姓名"] = [mySelf["姓名"]]
@@ -204,6 +213,10 @@ class StudentSet:
         else:
             print("Unknow score gen type: {}".format(scoreType))
 
+    
+    def getMyScoreRank(self):
+        return self.myScoreRank
+
 
     def displayMyScoreAndRank(self):
         myData = self.dfStudents.loc[self.dfStudents["姓名"] == (self.myName + self.myNameTag)]
@@ -220,10 +233,9 @@ class StudentSet:
             totalScore = GlobalConfig.ScoreTopGate
         if(totalScore < GlobalConfig.ScoreLowGate):
             totalScore = GlobalConfig.ScoreLowGate
-        scoreRank = self.dfScoreCounts.loc[self.dfScoreCounts["分数"] == totalScore, "累计"].values[0]
 
         print("\n")
-        print("{}分的累计人数为：{}人".format(totalScore, scoreRank))
+        print("{}分的累计人数为：{}人".format(totalScore, self.myScoreRank))
         return
     
 
