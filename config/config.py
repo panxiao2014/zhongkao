@@ -7,6 +7,9 @@ EdgeStudentTotal = 3000
 #市直属指标到校总数：
 CityQuotaTotal = 1732
 
+#艺体生总数：
+TalentQuotaTotal = 1744
+
 ScoreTopGate = 655  #655及以上得分合并统计总人数
 ScoreLowGate = 400  #400分以下忽略统计
 

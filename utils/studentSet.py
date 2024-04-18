@@ -253,6 +253,10 @@ class StudentSet:
         dfStuWithCityQuota = dfTemp[(dfTemp["姓名"] != myName) & (dfTemp["类型"] == "统招")].sample(n=GlobalConfig.CityQuotaTotal)
         dfTemp.drop(dfStuWithCityQuota.index, inplace=True)
 
+        #去掉艺体生：
+        dfTalentStudentQuota = dfTemp[(dfTemp["姓名"] != myName)].sample(n=GlobalConfig.TalentQuotaTotal)
+        dfTemp.drop(dfTalentStudentQuota.index, inplace=True)
+
 
         self.dfStuForSecondRound = dfTemp.copy()
         self.stuForSecondRoundNum = self.dfStuForSecondRound.shape[0]

@@ -94,7 +94,7 @@ if(myTotalScore < privilegeScoreGate):
     input()
     sys.exit()
 
-#去掉重高线以下，以及市指标到校生：
+#去掉重高线以下，以及市指标到校生, 艺体生 （这些学生不参加第二批次投档）
 stuSet.trimDownStudents()
 
 print("\n")
