@@ -273,6 +273,4 @@ class StudentSet:
 
         self.dfStuForSecondRound = dfTemp.copy()
         self.stuForSecondRoundNum = self.dfStuForSecondRound.shape[0]
-
-        self.dfStuForSecondRound['录取百分位'] = self.dfStuForSecondRound['录取位次'].apply(lambda x: stats.percentileofscore(self.dfStuForSecondRound['录取位次'], x, kind='strict'))
         return

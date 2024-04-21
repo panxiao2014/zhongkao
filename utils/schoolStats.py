@@ -49,6 +49,12 @@ class SchoolStats:
     def recommendSchool(self, scoreRank):
         #找到录取位次大于等于scoreRank，并且与之最接近的学校：
         dfClosestSchool = self.dfSchools[self.dfSchools["录取位次"] >= scoreRank]
+
+        #由于公布数据的一些差异，有可能有低分的排名已经超过了可查学校录取数据的最高录取位次，此时直接返回录取位次排名倒数的10个学校：
+        if(len(dfClosestSchool) == 0):
+            dfClosestSchool = self.dfSchools.tail(10)
+            return {"high": pd.DataFrame(), "medium": dfClosestSchool, "low": pd.DataFrame()}
+        
         dfClosestSchool = dfClosestSchool[dfClosestSchool["录取位次"] == dfClosestSchool.iloc[0]["录取位次"]]
         
 
@@ -82,9 +88,10 @@ class SchoolStats:
         print(GlobalConfig.bcolors.BLUE + "匹配学校：" + GlobalConfig.bcolors.ENDC)
         print(GlobalConfig.bcolors.BLUE + tabulate(self.briefSchoolInfo(dictRecommendSchool["medium"]), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
 
-        print("\n")
-        print(GlobalConfig.bcolors.CYAN + "低段学校：")
-        print(GlobalConfig.bcolors.CYAN + tabulate(self.briefSchoolInfo(dictRecommendSchool["low"]), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
+        if(len(dictRecommendSchool["low"]) != 0):
+            print("\n")
+            print(GlobalConfig.bcolors.CYAN + "低段学校：")
+            print(GlobalConfig.bcolors.CYAN + tabulate(self.briefSchoolInfo(dictRecommendSchool["low"]), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
         return
 
         
