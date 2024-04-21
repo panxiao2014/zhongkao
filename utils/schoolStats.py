@@ -1,4 +1,8 @@
 import pandas as pd
+from tabulate import tabulate
+from scipy import stats
+
+import config.config as GlobalConfig
 
 class SchoolStats:
     def __init__(self):
@@ -36,28 +40,51 @@ class SchoolStats:
         return self.numSecondRoundStuQuota
     
 
+    #返回一个精简的学校信息，便于打印：
+    def briefSchoolInfo(self, dfShoolInfo):
+        return dfShoolInfo[["学校代码", "学校名称", "公办民办", "录取位次", "录取分数线", "录取平均分"]]
+    
+
     #根据分数排名，给出推荐填报学校：
     def recommendSchool(self, scoreRank):
-        #根据学校录取位次，找到与scoreRank最接近的学校：
-        closestSchool = self.dfSchools.iloc[(self.dfSchools["录取位次"] - scoreRank).abs().argsort()[:1]]
-        closestSchool = self.dfSchools[self.dfSchools["录取位次"] == closestSchool["录取位次"].values[0]]
+        #找到录取位次大于等于scoreRank，并且与之最接近的学校：
+        dfClosestSchool = self.dfSchools[self.dfSchools["录取位次"] >= scoreRank]
+        dfClosestSchool = dfClosestSchool[dfClosestSchool["录取位次"] == dfClosestSchool.iloc[0]["录取位次"]]
         
 
-        #找到比最接近学校高的三个学校：
-        higherSchool = self.dfSchools[self.dfSchools["录取位次"] < closestSchool["录取位次"].values[0]]
-        if(len(higherSchool) < 3):
-            higherSchool = higherSchool.tail(len(higherSchool)) 
+        #找到比最接近学校高的五个学校：
+        dfHigherSchool = self.dfSchools[self.dfSchools["录取位次"] < dfClosestSchool["录取位次"].values[0]]
+        if(len(dfHigherSchool) < 5):
+            dfHigherSchool = dfHigherSchool.tail(len(dfHigherSchool)) 
         else:
-            higherSchool = higherSchool.tail(3)
+            dfHigherSchool = dfHigherSchool.tail(5)
        
 
-        #找到比最接近学校低的七个学校：
-        lowerSchool = self.dfSchools[self.dfSchools["录取位次"] > closestSchool["录取位次"].values[0]]
-        if(len(lowerSchool) < 7):
-            lowerSchool = lowerSchool.head(len(lowerSchool)) 
+        #找到比最接近学校低的八个学校：
+        dfLowerSchool = self.dfSchools[self.dfSchools["录取位次"] > dfClosestSchool["录取位次"].values[0]]
+        if(len(dfLowerSchool) < 8):
+            dfLowerSchool = dfLowerSchool.head(len(dfLowerSchool)) 
         else:
-            lowerSchool = lowerSchool.head(7)
+            dfLowerSchool = dfLowerSchool.head(8)
 
-        dfRecommendSchool = pd.concat([higherSchool, closestSchool, lowerSchool])
 
-        return dfRecommendSchool
+        return {"high": dfHigherSchool, "medium": dfClosestSchool, "low": dfLowerSchool}
+    
+
+    #显示推荐填报学校：
+    def displayRecommendSchool(self, dictRecommendSchool):
+        if(len(dictRecommendSchool["high"]) != 0):
+            print("\n")
+            print(GlobalConfig.bcolors.PINK + "高段学校：" + GlobalConfig.bcolors.ENDC)
+            print(GlobalConfig.bcolors.PINK + tabulate(self.briefSchoolInfo(dictRecommendSchool["high"]), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
+
+        print("\n")
+        print(GlobalConfig.bcolors.BLUE + "匹配学校：" + GlobalConfig.bcolors.ENDC)
+        print(GlobalConfig.bcolors.BLUE + tabulate(self.briefSchoolInfo(dictRecommendSchool["medium"]), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
+
+        print("\n")
+        print(GlobalConfig.bcolors.CYAN + "低段学校：")
+        print(GlobalConfig.bcolors.CYAN + tabulate(self.briefSchoolInfo(dictRecommendSchool["low"]), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
+        return
+
+        

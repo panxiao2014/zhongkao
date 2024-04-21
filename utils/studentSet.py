@@ -5,6 +5,7 @@ from tabulate import tabulate
 from progress.spinner import LineSpinner
 import random
 
+
 import config.config as GlobalConfig
 from utils.scoreGen import ScoreGen
 from utils.schoolStats import SchoolStats
@@ -226,7 +227,7 @@ class StudentSet:
 
         print("\n")
         print("{}同学, 您本次中考的成绩为：".format(self.myName))
-        print(tabulate(myData, showindex="never", headers="keys", tablefmt="double_grid"))
+        print(GlobalConfig.bcolors.YELLO + tabulate(myData, showindex="never", headers="keys", tablefmt="double_grid") + GlobalConfig.bcolors.ENDC)
 
         totalScore = myData.iloc[0]["总分"]
         if(totalScore > GlobalConfig.ScoreTopGate):
@@ -235,7 +236,7 @@ class StudentSet:
             totalScore = GlobalConfig.ScoreLowGate
 
         print("\n")
-        print("{}分的累计人数为：{}人".format(totalScore, self.myScoreRank))
+        print(GlobalConfig.bcolors.YELLO + "{}".format(totalScore) + GlobalConfig.bcolors.ENDC + "分的累计人数为： " + GlobalConfig.bcolors.YELLO + "{}".format(self.myScoreRank) + GlobalConfig.bcolors.ENDC + "人")
         return
     
 
@@ -250,7 +251,7 @@ class StudentSet:
 
     def displayPrivilegeScoreGate(self):
         print("\n")
-        print("本次中考的重点线为：{}".format(self.privilegeScoreGate))
+        print("本次中考的重点线为：" + GlobalConfig.bcolors.YELLO + "{}".format(self.privilegeScoreGate) + GlobalConfig.bcolors.ENDC)
 
 
     def trimDownStudents(self):
@@ -272,4 +273,6 @@ class StudentSet:
 
         self.dfStuForSecondRound = dfTemp.copy()
         self.stuForSecondRoundNum = self.dfStuForSecondRound.shape[0]
+
+        self.dfStuForSecondRound['录取百分位'] = self.dfStuForSecondRound['录取位次'].apply(lambda x: stats.percentileofscore(self.dfStuForSecondRound['录取位次'], x, kind='strict'))
         return

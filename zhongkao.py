@@ -20,8 +20,9 @@ else:
     _ = system('clear')
 
 with open("config/banner.txt", encoding="utf8") as f:
-    print(f.read())
+    print(GlobalConfig.bcolors.GREEN + f.read() + GlobalConfig.bcolors.ENDC)
 ################################################################
+
 
 
 stuNameData = StudentName()
@@ -87,11 +88,13 @@ stuSet.displayMyScoreAndRank()
 privilegeScoreGate = stuSet.getPrivilegeScoreGate(schoolStats)
 stuSet.displayPrivilegeScoreGate()
 
+stuSet.showScoreCount()
+
 #检查自己是否可以参加第二批次志愿填报：
 myTotalScore = stuSet.getMyTotalScore()
 if(myTotalScore < privilegeScoreGate):
     print("\n")
-    print("很遗憾，您本次中考没有达到重点线，不能参加第二批次志愿填报")
+    print(GlobalConfig.bcolors.GREEN + "很遗憾，您本次中考没有达到重点线，不能参加第二批次志愿填报" + GlobalConfig.bcolors.ENDC)
     input()
     sys.exit()
 
@@ -99,17 +102,19 @@ if(myTotalScore < privilegeScoreGate):
 stuSet.trimDownStudents()
 
 print("\n")
-print("参加第二批次网上志愿填报的学生共有：{}名".format(stuSet.getStuForSecondRoundNum()))
+print("参加第二批次网上志愿填报的学生共有：" + GlobalConfig.bcolors.YELLO + "{}".format(stuSet.getStuForSecondRoundNum()) + GlobalConfig.bcolors.ENDC + "名")
 
 time.sleep(1)
 print("\n")
-print("即将进入第二批次志愿填报阶段，按任意键继续。。。")
+print("即将进入第二批次志愿填报阶段，按回车键继续。。。")
 input()
 
 
 #根据自己排名列出推荐学校:
-dfRecommendSchool = schoolStats.recommendSchool(stuSet.getMyScoreRank())
-print(dfRecommendSchool)
+dictRecommendSchool = schoolStats.recommendSchool(stuSet.getMyScoreRank())
+print("\n")
+print("根据您的总分排名，我们向您推荐以下学校：")
+schoolStats.displayRecommendSchool(dictRecommendSchool)
 
 
 # stuSet.showScoreHist("语文")

@@ -17,3 +17,15 @@ ScoreLowGate = 400  #400分以下忽略统计
 HighScoreGate = 560
 HighScoreStudents = 13605
 HighScoretudentsVariance = 5000
+
+#格式化输出颜色：
+class bcolors:
+    PINK = '\033[95m'
+    BLUE = '\033[94m'
+    CYAN = '\033[96m'
+    GREEN = '\033[92m'
+    YELLO = '\033[93m'
+    RED = '\033[91m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    ENDC = '\033[0m'
