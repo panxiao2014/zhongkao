@@ -33,6 +33,8 @@ class SchoolStats:
 
         #去掉没有录取位次记录的学校：
         self.dfSchools = self.dfSchools[self.dfSchools["录取位次"] != 0]
+
+        GlobalConfig.LstSchoolCode = self.dfSchools["学校代码"].tolist()
         return
     
 
@@ -47,6 +49,11 @@ class SchoolStats:
 
     #根据分数排名，给出推荐填报学校：
     def recommendSchool(self, scoreRank):
+        #推荐高段学校数：
+        numRecommendHigh = 3
+        #推荐低段学校数：
+        numRecommendLow = 7
+
         #找到录取位次大于等于scoreRank，并且与之最接近的学校：
         dfClosestSchool = self.dfSchools[self.dfSchools["录取位次"] >= scoreRank]
 
@@ -58,20 +65,20 @@ class SchoolStats:
         dfClosestSchool = dfClosestSchool[dfClosestSchool["录取位次"] == dfClosestSchool.iloc[0]["录取位次"]]
         
 
-        #找到比最接近学校高的五个学校：
+        #找到比最接近学校高的三个学校：
         dfHigherSchool = self.dfSchools[self.dfSchools["录取位次"] < dfClosestSchool["录取位次"].values[0]]
-        if(len(dfHigherSchool) < 5):
+        if(len(dfHigherSchool) < numRecommendHigh):
             dfHigherSchool = dfHigherSchool.tail(len(dfHigherSchool)) 
         else:
-            dfHigherSchool = dfHigherSchool.tail(5)
+            dfHigherSchool = dfHigherSchool.tail(numRecommendHigh)
        
 
-        #找到比最接近学校低的八个学校：
+        #找到比最接近学校低的七个学校：
         dfLowerSchool = self.dfSchools[self.dfSchools["录取位次"] > dfClosestSchool["录取位次"].values[0]]
-        if(len(dfLowerSchool) < 8):
+        if(len(dfLowerSchool) < numRecommendLow):
             dfLowerSchool = dfLowerSchool.head(len(dfLowerSchool)) 
         else:
-            dfLowerSchool = dfLowerSchool.head(8)
+            dfLowerSchool = dfLowerSchool.head(numRecommendLow)
 
 
         return {"high": dfHigherSchool, "medium": dfClosestSchool, "low": dfLowerSchool}
@@ -92,6 +99,19 @@ class SchoolStats:
             print("\n")
             print(GlobalConfig.bcolors.CYAN + "低段学校：")
             print(GlobalConfig.bcolors.CYAN + tabulate(self.briefSchoolInfo(dictRecommendSchool["low"]), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
+        return
+    
+
+    #显示填报的七个志愿：
+    def displaySchoolApplied(self, dictShoolApplied):
+        applyTable =[]
+        for key, value in dictShoolApplied.items():
+            shoolName = self.dfSchools[self.dfSchools["学校代码"]==value]["学校名称"].iloc[0]
+            applyTable.append([key, value, shoolName])
+
+        print("\n")
+        print("您填报的志愿如下：")
+        print(GlobalConfig.bcolors.YELLO + tabulate(applyTable, showindex="never", tablefmt="heavy_grid") + GlobalConfig.bcolors.ENDC)
         return
 
         

@@ -8,7 +8,7 @@ import config.config as GlobalConfig
 from utils.studentName import StudentName
 from validators.nameVal import NameValidator
 from validators.genderVal import GenderValidator
-from utils.scoreStats import ScoreStats
+from validators.schoolVal import SchoolValidator
 from utils.schoolStats import SchoolStats
 from utils.studentSet import StudentSet
 
@@ -24,14 +24,8 @@ with open("config/banner.txt", encoding="utf8") as f:
 ################################################################
 
 
-
-stuNameData = StudentName()
-scoreStats = ScoreStats()
-
-schoolStats = SchoolStats()
-schoolStats.setupStats()
-
 #初始化学生，生成学生姓名，性别，类型（统招或调剂）
+stuNameData = StudentName()
 stuNames = stuNameData.cerateStudentNames(GlobalConfig.StudentTotal)
 stuSet = StudentSet(stuNames)
 stuSet.categorizeStudent()
@@ -85,6 +79,8 @@ stuSet.appendMyself(mySelf)
 stuSet.displayMyScoreAndRank()
 
 #获取重高线：
+schoolStats = SchoolStats()
+schoolStats.setupStats()
 privilegeScoreGate = stuSet.getPrivilegeScoreGate(schoolStats)
 stuSet.displayPrivilegeScoreGate()
 
@@ -113,7 +109,52 @@ dictRecommendSchool = schoolStats.recommendSchool(stuSet.getMyScoreRank())
 print("\n")
 print("根据您的总分排名，我们向您推荐以下学校：")
 schoolStats.displayRecommendSchool(dictRecommendSchool)
+print("其他学校信息，请参考<<schools.2023.xlsx>>。")
 
+#开始填报志愿：
+time.sleep(1)
+print("\n")
+print(GlobalConfig.bcolors.BOLD + "开始填报志愿，请依次输入学校代码。按回车键继续。。。：" + GlobalConfig.bcolors.ENDC)
+input()
+
+orderMap = {0: "第一志愿", 1: "第二志愿", 2: "第三志愿", 3: "第四志愿", 4: "第五志愿", 5: "第六志愿", 6: "第七志愿"}
+dictMyApply = {}
+confirmed = False
+
+while(confirmed == False):
+    dictMyApply = {}
+    print("\n")
+
+    for i in range(7):
+        questions = [
+            {
+                'type': 'input',
+                'name': orderMap[i],
+                'message': "{}：".format(orderMap[i]),
+                'validate': SchoolValidator
+            }
+        ]
+
+        dictMyApply.update(prompt(questions))
+
+    schoolStats.displaySchoolApplied(dictMyApply)
+
+    print("\n")
+    questions = [
+        {
+            'type': 'list',
+            'name': 'confirmOrNot',
+            'message': '请确认以上信息是否正确',
+            'choices': [
+                '不改了，投档吧',
+                '重新填报'
+            ]
+        }
+    ]
+    if(prompt(questions)["confirmOrNot"] == "重新填报"):
+        confirmed = False
+    else:
+        confirmed = True
 
 # stuSet.showScoreHist("语文")
 # stuSet.showScoreHist("数学")

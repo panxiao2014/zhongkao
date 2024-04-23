@@ -251,7 +251,7 @@ class StudentSet:
 
     def displayPrivilegeScoreGate(self):
         print("\n")
-        print("本次中考的重点线为：" + GlobalConfig.bcolors.YELLO + "{}".format(self.privilegeScoreGate) + GlobalConfig.bcolors.ENDC)
+        print("本次中考5+2区域省级示范性普高指导线为：" + GlobalConfig.bcolors.YELLO + "{}".format(self.privilegeScoreGate) + GlobalConfig.bcolors.ENDC)
 
 
     def trimDownStudents(self):
