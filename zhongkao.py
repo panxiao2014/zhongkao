@@ -88,8 +88,6 @@ stuSet.displayMyScoreAndRank()
 privilegeScoreGate = stuSet.getPrivilegeScoreGate(schoolStats)
 stuSet.displayPrivilegeScoreGate()
 
-stuSet.showScoreCount()
-
 #检查自己是否可以参加第二批次志愿填报：
 myTotalScore = stuSet.getMyTotalScore()
 if(myTotalScore < privilegeScoreGate):

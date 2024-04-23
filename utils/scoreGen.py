@@ -198,7 +198,7 @@ class ScoreGen:
             {
                 'type': 'input',
                 'name': '语文',
-                'message': '请输入你的语文得分(0-150)：',
+                'message': '请输入您的语文得分(0-150)：',
                 'validate': ScoreValidator150
             }
         ]
@@ -209,7 +209,7 @@ class ScoreGen:
             {
                 'type': 'input',
                 'name': '数学',
-                'message': '请输入你的数学得分(0-150)：',
+                'message': '请输入您的数学得分(0-150)：',
                 'validate': ScoreValidator150
             }
         ]
@@ -220,7 +220,7 @@ class ScoreGen:
             {
                 'type': 'input',
                 'name': '英语',
-                'message': '请输入你的英语得分(0-150)：',
+                'message': '请输入您的英语得分(0-150)：',
                 'validate': ScoreValidator150
             }
         ]
@@ -231,7 +231,7 @@ class ScoreGen:
             {
                 'type': 'input',
                 'name': '物理',
-                'message': '请输入你的物理得分(0-70)：',
+                'message': '请输入您的物理得分(0-70)：',
                 'validate': ScoreValidator70
             }
         ]
@@ -242,7 +242,7 @@ class ScoreGen:
             {
                 'type': 'input',
                 'name': '化学',
-                'message': '请输入你的化学得分(0-50)：',
+                'message': '请输入您的化学得分(0-50)：',
                 'validate': ScoreValidator50
             }
         ]
@@ -253,7 +253,7 @@ class ScoreGen:
             {
                 'type': 'input',
                 'name': '体育',
-                'message': '请输入你的体育得分(0-60)：',
+                'message': '请输入您的体育得分(0-60)：',
                 'validate': ScoreValidator60
             }
         ]
@@ -264,7 +264,7 @@ class ScoreGen:
             {
                 'type': 'input',
                 'name': '道法',
-                'message': '请输入你的道法得分(20, 16, 12, 8)：',
+                'message': '请输入您的道法得分(20, 16, 12, 8)：',
                 'validate': ScoreValidator20
             }
         ]
@@ -275,7 +275,7 @@ class ScoreGen:
             {
                 'type': 'input',
                 'name': '历史',
-                'message': '请输入你的历史得分(20, 16, 12, 8)：',
+                'message': '请输入您的历史得分(20, 16, 12, 8)：',
                 'validate': ScoreValidator20
             }
         ]
@@ -286,7 +286,7 @@ class ScoreGen:
             {
                 'type': 'input',
                 'name': '生物',
-                'message': '请输入你的生物得分(20, 16, 12, 8)：',
+                'message': '请输入您的生物得分(20, 16, 12, 8)：',
                 'validate': ScoreValidator20
             }
         ]
@@ -297,7 +297,7 @@ class ScoreGen:
             {
                 'type': 'input',
                 'name': '地理',
-                'message': '请输入你的地理得分(20, 16, 12, 8)：',
+                'message': '请输入您的地理得分(20, 16, 12, 8)：',
                 'validate': ScoreValidator20
             }
         ]
