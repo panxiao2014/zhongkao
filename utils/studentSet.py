@@ -99,6 +99,19 @@ class StudentSet:
         return
     
 
+    def getScoreRank(self, score):
+        scoreLevel = score
+        if(scoreLevel > GlobalConfig.ScoreTopGate):
+            scoreLevel = GlobalConfig.ScoreTopGate
+        if(scoreLevel < GlobalConfig.ScoreLowGate):
+            scoreLevel = GlobalConfig.ScoreLowGate
+        return self.dfScoreCounts.loc[self.dfScoreCounts["分数"] == scoreLevel, "累计"].values[0]
+    
+
+    def getMyScoreRank(self):
+        return self.myScoreRank
+    
+
     def getMyTotalScore(self):
         return self.myTotalScore
     
@@ -214,10 +227,6 @@ class StudentSet:
         else:
             print("Unknow score gen type: {}".format(scoreType))
 
-    
-    def getMyScoreRank(self):
-        return self.myScoreRank
-
 
     def displayMyScoreAndRank(self):
         myData = self.dfStudents.loc[self.dfStudents["姓名"] == (self.myName + self.myNameTag)]
@@ -270,7 +279,17 @@ class StudentSet:
         dfTalentStudentQuota = dfTemp[(dfTemp["姓名"] != myName)].sample(n=GlobalConfig.TalentQuotaTotal)
         dfTemp.drop(dfTalentStudentQuota.index, inplace=True)
 
-
         self.dfStuForSecondRound = dfTemp.copy()
         self.stuForSecondRoundNum = self.dfStuForSecondRound.shape[0]
+
+        #增加志愿填报列：
+        for i in range(GlobalConfig.NumShoolToApply):
+            self.dfStuForSecondRound["{}".format(GlobalConfig.OrderMap[i])] = None
+        return
+    
+
+    #保存我填报的志愿：
+    def saveMyApplying(self, dictMyApply):
+        for i in range(GlobalConfig.NumShoolToApply):
+            self.dfStuForSecondRound.loc[self.dfStuForSecondRound["姓名"] == (self.myName + self.myNameTag), "{}".format(GlobalConfig.OrderMap[i])] = dictMyApply["{}".format(GlobalConfig.OrderMap[i])]
         return

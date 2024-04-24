@@ -105,7 +105,7 @@ class SchoolStats:
         return
     
 
-    #显示填报的七个志愿：
+    #显示自己填报的七个志愿：
     def displaySchoolApplied(self, dictShoolApplied):
         applyTable =[]
         for key, value in dictShoolApplied.items():

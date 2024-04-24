@@ -11,6 +11,7 @@ from validators.genderVal import GenderValidator
 from validators.schoolVal import SchoolValidator
 from utils.schoolStats import SchoolStats
 from utils.studentSet import StudentSet
+from coreProcess.schoolApply import SchoolApply
 
 
 #############clear screen and show the banner:##################
@@ -117,7 +118,6 @@ print("\n")
 print(GlobalConfig.bcolors.BOLD + "开始填报志愿，请依次输入学校代码。按回车键继续。。。：" + GlobalConfig.bcolors.ENDC)
 input()
 
-orderMap = {0: "第一志愿", 1: "第二志愿", 2: "第三志愿", 3: "第四志愿", 4: "第五志愿", 5: "第六志愿", 6: "第七志愿"}
 dictMyApply = {}
 confirmed = False
 
@@ -125,12 +125,12 @@ while(confirmed == False):
     dictMyApply = {}
     print("\n")
 
-    for i in range(7):
+    for i in range(GlobalConfig.NumShoolToApply):
         questions = [
             {
                 'type': 'input',
-                'name': orderMap[i],
-                'message': "{}：".format(orderMap[i]),
+                'name': GlobalConfig.OrderMap[i],
+                'message': "{}：".format(GlobalConfig.OrderMap[i]),
                 'validate': SchoolValidator
             }
         ]
@@ -155,6 +155,13 @@ while(confirmed == False):
         confirmed = False
     else:
         confirmed = True
+
+#保存我的填报志愿：
+stuSet.saveMyApplying(dictMyApply)
+
+#进入学生填报志愿阶段：
+schoolApply = SchoolApply(stuSet, schoolStats)
+schoolApply.coreProcess()
 
 # stuSet.showScoreHist("语文")
 # stuSet.showScoreHist("数学")

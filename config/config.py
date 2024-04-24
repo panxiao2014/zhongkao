@@ -13,6 +13,7 @@ LstSchoolCode = []
 #艺体生总数：
 TalentQuotaTotal = 1744
 
+ScoreFull = 710
 ScoreTopGate = 655  #655及以上得分合并统计总人数
 ScoreLowGate = 400  #400分以下忽略统计
 
@@ -20,6 +21,9 @@ ScoreLowGate = 400  #400分以下忽略统计
 HighScoreGate = 560
 HighScoreStudents = 13605
 HighScoretudentsVariance = 5000
+
+#填报志愿数：
+NumShoolToApply = 2
 
 #格式化输出颜色：
 class bcolors:
@@ -32,3 +36,6 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
     ENDC = '\033[0m'
+
+
+OrderMap = {0: "第一志愿", 1: "第二志愿", 2: "第三志愿", 3: "第四志愿", 4: "第五志愿", 5: "第六志愿", 6: "第七志愿"}
