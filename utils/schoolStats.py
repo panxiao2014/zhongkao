@@ -1,12 +1,15 @@
 import pandas as pd
 from tabulate import tabulate
 from scipy import stats
+import warnings
 
 import config.config as GlobalConfig
 
 class SchoolStats:
     def __init__(self):
+        warnings.simplefilter(action='ignore', category=UserWarning)
         self.dfSchools = pd.read_excel('data/schools.2023.xlsx', dtype={"学校代码": str})
+        warnings.resetwarnings()
 
         #第二批次所有需要通过考试录取的学生总数。包括：
         #市直属普高，公办：计划招生数
