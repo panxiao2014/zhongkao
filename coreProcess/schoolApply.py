@@ -40,6 +40,7 @@ class SchoolApply:
                 dfLowShool = dfLowShool.iloc[1:]
                 numSchoolFilled += 1
                 continue
+        print(stuData)
         return
 
     
@@ -74,4 +75,5 @@ class SchoolApply:
 
         #将我重新加回df:
         self.dfStuForSecondRound = pd.concat([self.dfStuForSecondRound, myData])
+        print(self.dfStuForSecondRound)
         return
