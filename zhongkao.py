@@ -12,6 +12,7 @@ from validators.schoolVal import SchoolValidator
 from utils.schoolStats import SchoolStats
 from utils.studentSet import StudentSet
 from coreProcess.schoolApply import SchoolApply
+from coreProcess.studentDispatch import StudentDispatch
 
 
 #############clear screen and show the banner:##################
@@ -146,7 +147,7 @@ while(confirmed == False):
             'name': 'confirmOrNot',
             'message': '请确认以上信息是否正确',
             'choices': [
-                '不改了，投档吧',
+                '不改了，继续吧',
                 '重新填报'
             ]
         }
@@ -162,6 +163,11 @@ stuSet.saveMyApplying(dictMyApply)
 #进入学生填报志愿阶段：
 schoolApply = SchoolApply(stuSet, schoolStats)
 schoolApply.coreProcess()
+
+#投档环节：
+studentDispatch = StudentDispatch(stuSet, schoolStats)
+studentDispatch.setupSchoolQuota()
+studentDispatch.coreProcess()
 
 # stuSet.showScoreHist("语文")
 # stuSet.showScoreHist("数学")

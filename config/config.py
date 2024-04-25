@@ -23,7 +23,7 @@ HighScoreStudents = 13605
 HighScoretudentsVariance = 5000
 
 #填报志愿数：
-NumShoolToApply = 2
+NumShoolToApply = 7
 
 #格式化输出颜色：
 class bcolors:

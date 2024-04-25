@@ -68,7 +68,7 @@ class SchoolStats:
         dfClosestSchool = dfClosestSchool[dfClosestSchool["录取位次"] == dfClosestSchool.iloc[0]["录取位次"]]
         
 
-        #找到比最接近学校高的三个学校：
+        #找到比最接近学校高的学校：
         dfHigherSchool = self.dfSchools[self.dfSchools["录取位次"] < dfClosestSchool["录取位次"].values[0]]
         if(len(dfHigherSchool) < numRecommendHigh):
             dfHigherSchool = dfHigherSchool.tail(len(dfHigherSchool)) 
@@ -76,7 +76,7 @@ class SchoolStats:
             dfHigherSchool = dfHigherSchool.tail(numRecommendHigh)
        
 
-        #找到比最接近学校低的七个学校：
+        #找到比最接近学校低的学校：
         dfLowerSchool = self.dfSchools[self.dfSchools["录取位次"] > dfClosestSchool["录取位次"].values[0]]
         if(len(dfLowerSchool) < numRecommendLow):
             dfLowerSchool = dfLowerSchool.head(len(dfLowerSchool)) 
