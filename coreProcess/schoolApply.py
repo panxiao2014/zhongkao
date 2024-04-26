@@ -15,9 +15,9 @@ class SchoolApply:
         return
     
 
-    def applySchoolForEachStudent(self, stuData, scoreRank, recommendSchools):
+    def applySchoolForEachStudent(self, index, scoreRank, recommendSchools):
         #统招还是调剂：
-        stuType = stuData["类型"]
+        stuType = self.dfStuForSecondRound.at[index, "类型"]
 
         numSchoolFilled = 0
         dfMediumSchool = recommendSchools["medium"]
@@ -25,22 +25,21 @@ class SchoolApply:
         while(numSchoolFilled < GlobalConfig.NumShoolToApply):
             #调剂生只能填2，4， 6志愿：
             if(stuType == "调剂" and (numSchoolFilled % 2 == 0)):
-                stuData[GlobalConfig.OrderMap[numSchoolFilled]] = "None"
+                self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[numSchoolFilled]] = "None"
                 numSchoolFilled += 1
                 continue
 
             if(len(dfMediumSchool) != 0):
-                stuData[GlobalConfig.OrderMap[numSchoolFilled]] = dfMediumSchool.iloc[0][ "学校代码"]
+                self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[numSchoolFilled]] = dfMediumSchool.iloc[0][ "学校代码"]
                 dfMediumSchool = dfMediumSchool.iloc[1:]
                 numSchoolFilled += 1
                 continue
 
             if(len(dfLowShool) != 0):
-                stuData[GlobalConfig.OrderMap[numSchoolFilled]] = dfLowShool.iloc[0][ "学校代码"]
+                self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[numSchoolFilled]] = dfLowShool.iloc[0][ "学校代码"]
                 dfLowShool = dfLowShool.iloc[1:]
                 numSchoolFilled += 1
                 continue
-        print(stuData)
         return
 
     
@@ -55,7 +54,7 @@ class SchoolApply:
         recommendSchools = self.schoolStats.recommendSchool(scoreRank)
 
         for index, row in dfStudents.iterrows():
-            self.applySchoolForEachStudent(row, scoreRank, recommendSchools)
+            self.applySchoolForEachStudent(index, scoreRank, recommendSchools)
         return
     
 
@@ -75,5 +74,5 @@ class SchoolApply:
 
         #将我重新加回df:
         self.dfStuForSecondRound = pd.concat([self.dfStuForSecondRound, myData])
-        print(self.dfStuForSecondRound)
+        self.stuSet.dfStuForSecondRound = self.dfStuForSecondRound
         return

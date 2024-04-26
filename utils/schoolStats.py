@@ -120,5 +120,9 @@ class SchoolStats:
         print("您填报的志愿如下：")
         print(GlobalConfig.bcolors.YELLO + tabulate(applyTable, showindex="never", tablefmt="heavy_grid") + GlobalConfig.bcolors.ENDC)
         return
+    
+
+    def getSchoolNameByCode(self,schoolCode):
+        return self.dfSchools.loc[self.dfSchools["学校代码"]==schoolCode, "学校名称"].values[0]
 
         

@@ -166,8 +166,14 @@ schoolApply.coreProcess()
 
 #投档环节：
 studentDispatch = StudentDispatch(stuSet, schoolStats)
-studentDispatch.setupSchoolQuota()
+studentDispatch.setup()
 studentDispatch.coreProcess()
+
+#显示我的录取结果：
+print("\n")
+print(GlobalConfig.bcolors.BOLD + "投档结束。按回车键查看录取结果。。。" + GlobalConfig.bcolors.ENDC)
+input()
+stuSet.displayMyFinalResult(schoolStats)
 
 # stuSet.showScoreHist("语文")
 # stuSet.showScoreHist("数学")

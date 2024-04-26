@@ -177,7 +177,7 @@ class StudentSet:
     
     def generateScores(self):
         print("\n")
-        bar = LineSpinner('中考成绩统计中，请稍后。。。')
+        bar = LineSpinner('全市中考成绩统计中，请稍后。。。')
 
         #generate each student's score, including each subject and total score:
         self.generateEachAndTotalScores()
@@ -293,3 +293,19 @@ class StudentSet:
         for i in range(GlobalConfig.NumShoolToApply):
             self.dfStuForSecondRound.loc[self.dfStuForSecondRound["姓名"] == (self.myName + self.myNameTag), "{}".format(GlobalConfig.OrderMap[i])] = dictMyApply["{}".format(GlobalConfig.OrderMap[i])]
         return
+    
+    #显示我的录取结果：
+    def displayMyFinalResult(self, schoolStats):
+        print("\n")
+        if(self.dfStuForSecondRound.loc[self.dfStuForSecondRound["姓名"] == (self.myName + self.myNameTag), "已经录取"].values[0] == False):
+            print(GlobalConfig.bcolors.CYAN + "很遗憾，您的填报志愿全部落空。您还可以参加第二批次补录和第三批次志愿填报" + GlobalConfig.bcolors.ENDC)
+            return
+        
+        admitOrder = self.dfStuForSecondRound.loc[self.dfStuForSecondRound["姓名"] == (self.myName + self.myNameTag), "录取志愿"].values[0]
+        schoolCode = self.dfStuForSecondRound.loc[self.dfStuForSecondRound["姓名"] == (self.myName + self.myNameTag), "录取学校代码"].values[0]
+        schoolName = schoolStats.getSchoolNameByCode(schoolCode)
+        
+        adminMsg = "{}同学，恭喜您！您在{}被{}录取".format(self.myName, admitOrder, schoolName)
+        print(GlobalConfig.bcolors.CYAN + adminMsg + GlobalConfig.bcolors.ENDC)
+        return
+        
