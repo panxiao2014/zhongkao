@@ -126,11 +126,17 @@ class StudentSet:
         self.dfScoreCounts['人数'] = scoreStats.values
 
         #merge socres above high gate:
-        self.dfScoreCounts.loc[self.dfScoreCounts['分数'].between(GlobalConfig.ScoreTopGate, 710), '分数'] = GlobalConfig.ScoreTopGate
+        self.dfScoreCounts.loc[self.dfScoreCounts['分数'].between(GlobalConfig.ScoreTopGate, GlobalConfig.ScoreFull), '分数'] = GlobalConfig.ScoreTopGate
+
         self.dfScoreCounts = self.dfScoreCounts.groupby('分数', as_index=False).agg({'人数': 'sum'})
-
-
         self.dfScoreCounts = self.dfScoreCounts.sort_values(by='分数', ascending=False)
+
+        #如果本次考试没有人达到GlobalConfig.ScoreTopGate的分数，则把GlobalConfig.ScoreTopGate和本次考试最高分之间的空缺补全：
+        topScore = self.dfScoreCounts.iloc[0]['分数']
+        if(topScore < GlobalConfig.ScoreTopGate):
+            dfTopScoreGap = pd.DataFrame({"分数": range(GlobalConfig.ScoreTopGate, topScore, -1), "人数": 0})
+            self.dfScoreCounts = pd.concat([dfTopScoreGap, self.dfScoreCounts])
+            self.dfScoreCounts = self.dfScoreCounts.sort_values(by='分数', ascending=False)
         return
     
 

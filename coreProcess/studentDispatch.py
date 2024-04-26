@@ -35,6 +35,7 @@ class StudentDispatch:
             self.finalAdmitStats[GlobalConfig.OrderMap[i]] = 0
         return
     
+
     #在某一分数段，如果填报学校的人数超过学校录取余额的，则进行PK。官方规则如下：
     # 1. "成都工匠"子女，市级以上新时代好少年等优先投档
     # 2. 语，数，外总分高，优先投档
@@ -43,8 +44,11 @@ class StudentDispatch:
     # 5. 若还没有决出胜负，经研究后处理
     # 为简化，本程序只执行规则2。如果不能决出胜负，则随机选择决定
     def studentsPK(self, dfGroupedStudents, quotaRemain):
-        dfGroupedStudents = dfGroupedStudents.sort_values(by="总分", ascending=False)
+        dfGroupedStudents["partialTotal"] = dfGroupedStudents["语文"] + dfGroupedStudents["数学"] + dfGroupedStudents["英语"]
+        dfGroupedStudents = dfGroupedStudents.sort_values(by="partialTotal", ascending=False)
+
         dfGroupedStudents = dfGroupedStudents.head(quotaRemain)
+        dfGroupedStudents.drop(columns="partialTotal", inplace=True)
         return dfGroupedStudents
     
 
