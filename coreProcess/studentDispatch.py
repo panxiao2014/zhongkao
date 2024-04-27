@@ -57,7 +57,8 @@ class StudentDispatch:
     #applyOrder： 第几志愿
     #schoolCode 当前填报的学校代码
     #dfGroupedStudents: 在该分数段下，当前志愿里填写该学校的学生集
-    def dispatchToSchoolWithApplyOrder(self, score, applyOrder, schoolCode, dfGroupedStudents):
+    #dfStudents: 该分数段的所有学生集
+    def dispatchToSchoolWithApplyOrder(self, score, applyOrder, schoolCode, dfGroupedStudents, dfStudents):
         #1,3,5,7查看统招余额，2，4，6查看调剂余额：
         orderType = ""
         if(applyOrder % 2 == 0):
@@ -70,7 +71,6 @@ class StudentDispatch:
             return
         
         stuRemain = len(dfGroupedStudents)
-
         if(quotaRemain >= stuRemain):
             #学校录取剩余名额大于填报学校的学生数，则所有学生录取:
             self.numStudentsAdmitted += stuRemain
@@ -80,7 +80,7 @@ class StudentDispatch:
             self.dfSchools.loc[self.dfSchools["学校代码"]==schoolCode, "{}余额".format(orderType)] = quotaRemain - stuRemain
 
             #更新学生记录：
-            dfGroupedStudents["已经录取"] = True
+            dfStudents.loc[dfStudents["姓名"].isin(dfGroupedStudents["姓名"]), "已经录取"] = True
             self.dfStuForSecondRound.loc[self.dfStuForSecondRound["姓名"].isin(dfGroupedStudents["姓名"]), "已经录取"] = True
             self.dfStuForSecondRound.loc[self.dfStuForSecondRound["姓名"].isin(dfGroupedStudents["姓名"]), "录取志愿"] = GlobalConfig.OrderMap[applyOrder]
             self.dfStuForSecondRound.loc[self.dfStuForSecondRound["姓名"].isin(dfGroupedStudents["姓名"]), "录取学校代码"] = schoolCode
@@ -95,7 +95,7 @@ class StudentDispatch:
             self.dfSchools.loc[self.dfSchools["学校代码"]==schoolCode, "{}余额".format(orderType)] = 0
 
             #更新学生记录：
-            dfWinningStudents["已经录取"] = True
+            dfStudents.loc[dfStudents["姓名"].isin(dfWinningStudents["姓名"]), "已经录取"] = True
             self.dfStuForSecondRound.loc[self.dfStuForSecondRound["姓名"].isin(dfWinningStudents["姓名"]), "已经录取"] = True
             self.dfStuForSecondRound.loc[self.dfStuForSecondRound["姓名"].isin(dfWinningStudents["姓名"]), "录取志愿"] = GlobalConfig.OrderMap[applyOrder]
             self.dfStuForSecondRound.loc[self.dfStuForSecondRound["姓名"].isin(dfWinningStudents["姓名"]), "录取学校代码"] = schoolCode
@@ -115,18 +115,19 @@ class StudentDispatch:
             groupSchool = dfStudents.groupby(GlobalConfig.OrderMap[i])
             for schoolCode, dfGroupedStudents in groupSchool:
                 if(schoolCode != "None"):
-                    self.dispatchToSchoolWithApplyOrder(score, i, schoolCode, dfGroupedStudents)
+                    self.dispatchToSchoolWithApplyOrder(score, i, schoolCode, dfGroupedStudents, dfStudents)
         return
     
 
     def coreProcess(self):
-        dfStudentsToDispatch = self.dfStuForSecondRound.copy()
+        dfStudents = self.dfStuForSecondRound[self.dfStuForSecondRound["已经录取"] == False]
+
         #655分以上同学统一处理：
-        dfTopStudents = dfStudentsToDispatch[dfStudentsToDispatch['总分'] >= GlobalConfig.ScoreTopGate]
+        dfTopStudents = self.dfStuForSecondRound[self.dfStuForSecondRound['总分'] >= GlobalConfig.ScoreTopGate]
         self.studentsDispatch(dfTopStudents, GlobalConfig.ScoreTopGate)
 
         #从高分到省重线分，依次投档：
         for i in range(GlobalConfig.ScoreTopGate-1, self.stuSet.privilegeScoreGate-1, -1):
-            dfStudents = dfStudentsToDispatch[dfStudentsToDispatch['总分'] == i]
+            dfStudents = self.dfStuForSecondRound[self.dfStuForSecondRound['总分'] == i]
             self.studentsDispatch(dfStudents, i)
         return
