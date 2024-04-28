@@ -1,4 +1,9 @@
+from tabulate import tabulate
+from PyInquirer import prompt
+import pandas as pd
+
 import config.config as GlobalConfig
+from validators.schoolVal import SchoolValidator
 
 class StudentDispatch:
     def __init__(self, stuSet, schoolStats):
@@ -49,6 +54,7 @@ class StudentDispatch:
 
         dfGroupedStudents = dfGroupedStudents.head(quotaRemain)
         dfGroupedStudents.drop(columns="partialTotal", inplace=True)
+
         return dfGroupedStudents
     
 
@@ -130,4 +136,42 @@ class StudentDispatch:
         for i in range(GlobalConfig.ScoreTopGate-1, self.stuSet.privilegeScoreGate-1, -1):
             dfStudents = self.dfStuForSecondRound[self.dfStuForSecondRound['总分'] == i]
             self.studentsDispatch(dfStudents, i)
+        return
+    
+
+    #查看录取概况：
+    def displayGeneralStats(self):
+        print("第二批次一共录取学生数： " + GlobalConfig.bcolors.YELLO + str(self.numStudentsAdmitted) + GlobalConfig.bcolors.ENDC + "名")
+        print("滑档的学生共有： " + GlobalConfig.bcolors.YELLO + str(len(self.dfStuForSecondRound)- self.numStudentsAdmitted) + GlobalConfig.bcolors.ENDC + "名")
+        return
+    
+
+    #查看各志愿的录取统计信息：
+    def displayEachOrderStats(self):
+        print("各志愿录取人数如下：")
+        print(GlobalConfig.bcolors.YELLO + tabulate({"填报志愿": self.finalAdmitStats.keys(), "录取人数": self.finalAdmitStats.values()}, showindex="never", headers="keys", tablefmt="double_grid") + GlobalConfig.bcolors.ENDC)
+        return
+    
+
+    #查看学校录取结果：
+    def displaySchoolAdmitResult(self):
+        questions = [
+            {
+                'type': 'input',
+                'name': 'inputSchool',
+                'message': "请输入您想要查看学校的代码：",
+                'validate': SchoolValidator
+            }
+        ]
+
+        schoolCode = prompt(questions)['inputSchool']
+        schoolName = self.schoolStats.getSchoolNameByCode(schoolCode)
+
+        dfStuAdmit = (self.dfStuForSecondRound.loc[self.dfStuForSecondRound["录取学校代码"] == schoolCode]).copy()
+        dfStuAdmit = dfStuAdmit.sort_values(by="总分", ascending=False)
+        dfStuAdmit = dfStuAdmit[["姓名", "性别", "类型", "总分", "录取志愿"]]
+
+        print("\n")
+        print(GlobalConfig.bcolors.YELLO + schoolName + GlobalConfig.bcolors.ENDC + "一共录取学生" + GlobalConfig.bcolors.YELLO + str(dfStuAdmit) + GlobalConfig.bcolors.ENDC+ "名。录取名单如下：")
+        print(GlobalConfig.bcolors.YELLO + tabulate(dfStuAdmit, showindex="never", headers="keys", tablefmt="double_grid") + GlobalConfig.bcolors.ENDC)
         return

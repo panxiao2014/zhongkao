@@ -175,6 +175,40 @@ print(GlobalConfig.bcolors.BOLD + "投档结束。按回车键查看录取结果
 input()
 stuSet.displayMyFinalResult(schoolStats)
 
+#查看其他统计结果：
+input()
+isOver = False
+while(isOver == False):
+    questions = [
+        {
+            'type': 'list',
+            'name': 'chooseStats',
+            'message': '请选择您接下来的操作:',
+            'choices': [
+                '查看录取概况',
+                '查看各志愿录取统计',
+                '查看各学校录取结果',
+                '不玩了，结束'
+            ]
+        }
+    ]
+
+    myChoice = prompt(questions)["chooseStats"]
+    if(myChoice == "不玩了，结束"):
+        isOver = True
+    elif(myChoice == "查看录取概况"):
+        print("\n")
+        studentDispatch.displayGeneralStats()
+        print("\n")
+    elif(myChoice == "查看各志愿录取统计"):
+        print("\n")
+        studentDispatch.displayEachOrderStats()
+        print("\n")
+    elif(myChoice == "查看各学校录取结果"):
+        print("\n")
+        studentDispatch.displaySchoolAdmitResult()
+        print("\n")
+
 # stuSet.showScoreHist("语文")
 # stuSet.showScoreHist("数学")
 # stuSet.showScoreHist("英语")
