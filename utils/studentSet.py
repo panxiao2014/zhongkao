@@ -221,7 +221,7 @@ class StudentSet:
     
 
     def showScoreCount(self):
-        print(tabulate(self.dfScoreCounts, showindex="never", headers="keys", tablefmt="double_grid"))
+        print(GlobalConfig.bcolors.GREEN + tabulate(self.dfScoreCounts, showindex="never", headers="keys", tablefmt="rounded_grid") + GlobalConfig.bcolors.ENDC)
         return
     
 

@@ -33,6 +33,8 @@ stuSet = StudentSet(stuNames)
 stuSet.categorizeStudent()
 #stuSet.showStudents()
 
+GlobalConfig.StuNameLst = [d["姓名"] for d in stuNames]
+
 questions = [
     {
         'type': 'input',
@@ -69,13 +71,13 @@ questions = [
 
 myScoreType = prompt(questions)
 myScore = stuSet.generateMyScore(myScoreType["chooseScoreGenType"])
-
 mySelf.update(myScore)
 
 #生成所有学生的考试成绩：
 stuSet.generateScores()
 stuSet.appendMyself(mySelf)
 
+GlobalConfig.StuNameLst.append(stuSet.myName+stuSet.myNameTag)
 
 #显示我的成绩及排名：
 stuSet.displayMyScoreAndRank()
@@ -188,6 +190,8 @@ while(isOver == False):
                 '查看录取概况',
                 '查看各志愿录取统计',
                 '查看各学校录取结果',
+                '查看考生信息',
+                '查看一分一段表',
                 '不玩了，结束'
             ]
         }
@@ -207,6 +211,14 @@ while(isOver == False):
     elif(myChoice == "查看各学校录取结果"):
         print("\n")
         studentDispatch.displaySchoolAdmitResult()
+        print("\n")
+    elif(myChoice == "查看考生信息"):
+        print("\n")
+        studentDispatch.displayStudentInfo()
+        print("\n")
+    elif(myChoice == "查看一分一段表"):
+        print("\n")
+        stuSet.showScoreCount()
         print("\n")
 
 # stuSet.showScoreHist("语文")

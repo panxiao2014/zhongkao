@@ -7,6 +7,9 @@ EdgeStudentTotal = 3000
 #市直属指标到校总数：
 CityQuotaTotal = 1732
 
+#所有考生姓名：
+StuNameLst = []
+
 #所有学校的代码：
 LstSchoolCode = []
 

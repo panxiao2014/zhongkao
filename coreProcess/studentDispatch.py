@@ -4,6 +4,7 @@ import pandas as pd
 
 import config.config as GlobalConfig
 from validators.schoolVal import SchoolValidator
+from validators.studentNameVal import StudentNameValidator
 
 class StudentDispatch:
     def __init__(self, stuSet, schoolStats):
@@ -25,6 +26,7 @@ class StudentDispatch:
         #dfSchools, 增加column用于跟踪投档名额：
         self.dfSchools["统招余额"] = self.dfSchools.apply(lambda row: row['5+2区域统招'] - row['指标到校'] - row["民办校内指标到校"] - row["全市艺体"], axis=1)
         self.dfSchools["调剂余额"] = self.dfSchools.apply(lambda row: row['5+2区域调剂'], axis=1)
+        self.dfSchools["第二批次招收名额"] = self.dfSchools["统招余额"] + self.dfSchools["调剂余额"]
 
         #dfSchools, 增加column用于记录录取结果：
         for i in range(0, GlobalConfig.NumShoolToApply):
@@ -166,12 +168,63 @@ class StudentDispatch:
 
         schoolCode = prompt(questions)['inputSchool']
         schoolName = self.schoolStats.getSchoolNameByCode(schoolCode)
+        schoolPlanQuota = self.dfSchools.loc[self.dfSchools["学校代码"]==schoolCode, "第二批次招收名额"].values[0]
+        schoolPlanQuotaStr = GlobalConfig.bcolors.YELLO + schoolName + GlobalConfig.bcolors.ENDC + "第二批次计划招收学生" + GlobalConfig.bcolors.YELLO + str(schoolPlanQuota) + GlobalConfig.bcolors.ENDC + "名"
 
         dfStuAdmit = (self.dfStuForSecondRound.loc[self.dfStuForSecondRound["录取学校代码"] == schoolCode]).copy()
         dfStuAdmit = dfStuAdmit.sort_values(by="总分", ascending=False)
         dfStuAdmit = dfStuAdmit[["姓名", "性别", "类型", "总分", "录取志愿"]]
 
         print("\n")
-        print(GlobalConfig.bcolors.YELLO + schoolName + GlobalConfig.bcolors.ENDC + "一共录取学生" + GlobalConfig.bcolors.YELLO + str(dfStuAdmit) + GlobalConfig.bcolors.ENDC+ "名。录取名单如下：")
-        print(GlobalConfig.bcolors.YELLO + tabulate(dfStuAdmit, showindex="never", headers="keys", tablefmt="double_grid") + GlobalConfig.bcolors.ENDC)
+        print(schoolPlanQuotaStr)
+        print("实际录取学生" + GlobalConfig.bcolors.YELLO + str(len(dfStuAdmit)) + GlobalConfig.bcolors.ENDC+ "名。录取名单如下：")
+        print(GlobalConfig.bcolors.CYAN + tabulate(dfStuAdmit, showindex="never", headers="keys", tablefmt="rounded_grid") + GlobalConfig.bcolors.ENDC)
         return
+
+
+    #查看考生信息：
+    def displayStudentInfo(self):
+        questions = [
+            {
+                'type': 'input',
+                'name': 'inputName',
+                'message': "请输入您想要查看考生的姓名：",
+                'validate': StudentNameValidator
+            }
+        ]
+
+        stuName = ""
+        inputName = prompt(questions)['inputName']
+        if(inputName == self.stuSet.myName):
+            stuName = inputName + self.stuSet.myNameTag
+        else:
+            stuName = inputName
+
+        dfStu = self.dfStuForSecondRound[self.dfStuForSecondRound["姓名"]==stuName].head(1)
+        print(dfStu)
+        dfStuBase = dfStu[["姓名", "性别", "类型", "总分"]]
+        
+        print("考生基本信息：")
+        print(GlobalConfig.bcolors.CYAN + tabulate(dfStuBase, showindex="never", headers="keys", tablefmt="rounded_outline") + GlobalConfig.bcolors.ENDC)
+        print("\n")
+
+        print("填报的志愿：")
+        applyTable = []
+        for i in range(0, GlobalConfig.NumShoolToApply):
+            schoolCode = dfStu.iloc[0][GlobalConfig.OrderMap[i]]
+            schoolName = self.dfSchools[self.dfSchools["学校代码"]==schoolCode]["学校名称"].iloc[0]
+            applyTable.append([GlobalConfig.OrderMap[i], schoolCode, schoolName])
+
+        print(GlobalConfig.bcolors.CYAN + tabulate(applyTable, showindex="never", tablefmt="rounded_grid") + GlobalConfig.bcolors.ENDC)
+        print("\n")
+
+        print("录取结果：")
+        if(dfStu.iloc[0]["已经录取"] == False):
+            print(GlobalConfig.bcolors.CYAN + "遭遇滑档，录取失败" + GlobalConfig.bcolors.ENDC)
+        else:
+            admitOrder = dfStu.iloc[0]["录取志愿"]
+            admitCode = dfStu.iloc[0]["录取学校代码"]
+            admitName = self.dfSchools[self.dfSchools["学校代码"]==admitCode]["学校名称"].iloc[0]
+            admitTable = [[admitOrder, admitCode, admitName]]
+            admitHeaders = ["录取志愿", "学校代码", "学校名称"]
+            print(GlobalConfig.bcolors.CYAN + tabulate(admitTable, showindex="never", headers=admitHeaders, tablefmt="rounded_grid") + GlobalConfig.bcolors.ENDC)
