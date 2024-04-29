@@ -61,7 +61,7 @@ class SchoolApply:
     #学生填报志愿:
     def coreProcess(self):
         #我的志愿已经填报，先把自己从df中移除：
-        myData = self.dfStuForSecondRound.loc[self.dfStuForSecondRound["姓名"] == (self.myName + self.myNameTag)].copy()
+        dfMyData = self.dfStuForSecondRound.loc[self.dfStuForSecondRound["姓名"] == (self.myName + self.myNameTag)].copy()
         self.dfStuForSecondRound = self.dfStuForSecondRound[self.dfStuForSecondRound["姓名"] != (self.myName + self.myNameTag)]
 
         print("\n")
@@ -73,6 +73,6 @@ class SchoolApply:
             bar.next()
 
         #将我重新加回df:
-        self.dfStuForSecondRound = pd.concat([self.dfStuForSecondRound, myData])
+        self.dfStuForSecondRound = pd.concat([self.dfStuForSecondRound, dfMyData])
         self.stuSet.dfStuForSecondRound = self.dfStuForSecondRound
         return

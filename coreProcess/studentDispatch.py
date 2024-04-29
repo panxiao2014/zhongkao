@@ -50,11 +50,11 @@ class StudentDispatch:
     # 4. 体育成绩高，优先投档
     # 5. 若还没有决出胜负，经研究后处理
     # 为简化，本程序只执行规则2。如果不能决出胜负，则随机选择决定
-    def studentsPK(self, dfGroupedStudents, quotaRemain):
+    def studentsPK(self, dfGroupedStudents, numQuotaRemain):
         dfGroupedStudents["partialTotal"] = dfGroupedStudents["语文"] + dfGroupedStudents["数学"] + dfGroupedStudents["英语"]
         dfGroupedStudents = dfGroupedStudents.sort_values(by="partialTotal", ascending=False)
 
-        dfGroupedStudents = dfGroupedStudents.head(quotaRemain)
+        dfGroupedStudents = dfGroupedStudents.head(numQuotaRemain)
         dfGroupedStudents.drop(columns="partialTotal", inplace=True)
 
         return dfGroupedStudents
@@ -73,19 +73,20 @@ class StudentDispatch:
             orderType = "统招"
         else:
             orderType = "调剂"
+        strOrderType = "{}余额".format(orderType)
         
-        quotaRemain = self.dfSchools.loc[self.dfSchools["学校代码"]==schoolCode, "{}余额".format(orderType)].values[0]
-        if(quotaRemain == 0):
+        numQuotaRemain = self.dfSchools.loc[self.dfSchools["学校代码"]==schoolCode, strOrderType].values[0]
+        if(numQuotaRemain == 0):
             return
         
-        stuRemain = len(dfGroupedStudents)
-        if(quotaRemain >= stuRemain):
+        numStuRemain = len(dfGroupedStudents)
+        if(numQuotaRemain >= numStuRemain):
             #学校录取剩余名额大于填报学校的学生数，则所有学生录取:
-            self.numStudentsAdmitted += stuRemain
-            self.finalAdmitStats[GlobalConfig.OrderMap[applyOrder]] += stuRemain
+            self.numStudentsAdmitted += numStuRemain
+            self.finalAdmitStats[GlobalConfig.OrderMap[applyOrder]] += numStuRemain
 
             #更新学校剩余招收名额：
-            self.dfSchools.loc[self.dfSchools["学校代码"]==schoolCode, "{}余额".format(orderType)] = quotaRemain - stuRemain
+            self.dfSchools.loc[self.dfSchools["学校代码"]==schoolCode, strOrderType] = numQuotaRemain - numStuRemain
 
             #更新学生记录：
             dfStudents.loc[dfStudents["姓名"].isin(dfGroupedStudents["姓名"]), "已经录取"] = True
@@ -95,12 +96,12 @@ class StudentDispatch:
 
             return
         else:
-            dfWinningStudents = self.studentsPK(dfGroupedStudents, quotaRemain)
-            self.numStudentsAdmitted += quotaRemain
-            self.finalAdmitStats[GlobalConfig.OrderMap[applyOrder]] += quotaRemain
+            dfWinningStudents = self.studentsPK(dfGroupedStudents, numQuotaRemain)
+            self.numStudentsAdmitted += numQuotaRemain
+            self.finalAdmitStats[GlobalConfig.OrderMap[applyOrder]] += numQuotaRemain
 
             #更新学校剩余招收名额：
-            self.dfSchools.loc[self.dfSchools["学校代码"]==schoolCode, "{}余额".format(orderType)] = 0
+            self.dfSchools.loc[self.dfSchools["学校代码"]==schoolCode, strOrderType] = 0
 
             #更新学生记录：
             dfStudents.loc[dfStudents["姓名"].isin(dfWinningStudents["姓名"]), "已经录取"] = True
@@ -212,8 +213,11 @@ class StudentDispatch:
         applyTable = []
         for i in range(0, GlobalConfig.NumShoolToApply):
             schoolCode = dfStu.iloc[0][GlobalConfig.OrderMap[i]]
-            schoolName = self.dfSchools[self.dfSchools["学校代码"]==schoolCode]["学校名称"].iloc[0]
-            applyTable.append([GlobalConfig.OrderMap[i], schoolCode, schoolName])
+            if(schoolCode == "None"):
+                applyTable.append([GlobalConfig.OrderMap[i], "", ""])
+            else:
+                schoolName = self.dfSchools[self.dfSchools["学校代码"]==schoolCode]["学校名称"].iloc[0]
+                applyTable.append([GlobalConfig.OrderMap[i], schoolCode, schoolName])
 
         print(GlobalConfig.bcolors.CYAN + tabulate(applyTable, showindex="never", tablefmt="rounded_grid") + GlobalConfig.bcolors.ENDC)
         print("\n")
