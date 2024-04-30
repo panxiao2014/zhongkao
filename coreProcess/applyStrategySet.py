@@ -5,10 +5,16 @@ class ApplyStrategySet:
         self.stuSet = stuSet
         self.schoolStats = schoolStats
         self.dfStuForSecondRound = dfStuForSecondRound
+        self.strategyStats = {"大众型": {"使用次数": 0, "录取人数": 0, "得分": 0, "有效指数": 0},
+                              "进取型": {"使用次数": 0, "录取人数": 0,  "得分": 0, "有效指数": 0},
+                              "保守型": {"使用次数": 0, "录取人数": 0,  "得分": 0, "有效指数": 0},
+                              "进取土豪型": {"使用次数": 0, "录取人数": 0,  "得分": 0, "有效指数": 0},
+                              "保守土豪型": {"使用次数": 0, "录取人数": 0,  "得分": 0, "有效指数": 0}}
         return
     
 
-    def applySchool(self, index, scoreRank, recommendSchools):
+    #大众型
+    def strategyModerate(self, index, scoreRank, recommendSchools):
         #统招还是调剂：
         stuType = self.dfStuForSecondRound.at[index, "类型"]
 
@@ -33,4 +39,9 @@ class ApplyStrategySet:
                 dfLowShool = dfLowShool.iloc[1:]
                 numSchoolFilled += 1
                 continue
+        return
+    
+
+    def applySchool(self, index, scoreRank, recommendSchools):
+        self.strategyModerate(index, scoreRank, recommendSchools)
         return

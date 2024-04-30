@@ -291,6 +291,10 @@ class StudentSet:
         #增加志愿填报列：
         for i in range(GlobalConfig.NumShoolToApply):
             self.dfStuForSecondRound["{}".format(GlobalConfig.OrderMap[i])] = None
+
+        #增加选取策略列：
+        self.dfStuForSecondRound["选取策略"] = None
+
         return
     
 
