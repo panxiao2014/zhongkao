@@ -2,6 +2,7 @@ from progress.spinner import LineSpinner
 import pandas as pd
 
 import config.config as GlobalConfig
+from coreProcess.applyStrategySet import ApplyStrategySet
 
 class SchoolApply:
     def __init__(self, stuSet, schoolStats):
@@ -12,34 +13,12 @@ class SchoolApply:
         self.myName = stuSet.myName
         self.myNameTag = stuSet.myNameTag
         self.privilegeScoreGate = stuSet.privilegeScoreGate
+        self.applyStrategySet = None
         return
     
 
     def applySchoolForEachStudent(self, index, scoreRank, recommendSchools):
-        #统招还是调剂：
-        stuType = self.dfStuForSecondRound.at[index, "类型"]
-
-        numSchoolFilled = 0
-        dfMediumSchool = recommendSchools["medium"]
-        dfLowShool = recommendSchools["low"]
-        while(numSchoolFilled < GlobalConfig.NumShoolToApply):
-            #调剂生只能填2，4， 6志愿：
-            if(stuType == "调剂" and (numSchoolFilled % 2 == 0)):
-                self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[numSchoolFilled]] = "None"
-                numSchoolFilled += 1
-                continue
-
-            if(len(dfMediumSchool) != 0):
-                self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[numSchoolFilled]] = dfMediumSchool.iloc[0][ "学校代码"]
-                dfMediumSchool = dfMediumSchool.iloc[1:]
-                numSchoolFilled += 1
-                continue
-
-            if(len(dfLowShool) != 0):
-                self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[numSchoolFilled]] = dfLowShool.iloc[0][ "学校代码"]
-                dfLowShool = dfLowShool.iloc[1:]
-                numSchoolFilled += 1
-                continue
+        self.applyStrategySet.applySchool(index, scoreRank, recommendSchools)
         return
 
     
@@ -63,6 +42,7 @@ class SchoolApply:
         #我的志愿已经填报，先把自己从df中移除：
         dfMyData = self.dfStuForSecondRound.loc[self.dfStuForSecondRound["姓名"] == (self.myName + self.myNameTag)].copy()
         self.dfStuForSecondRound = self.dfStuForSecondRound[self.dfStuForSecondRound["姓名"] != (self.myName + self.myNameTag)]
+        self.applyStrategySet = ApplyStrategySet(self.stuSet, self.schoolStats, self.dfStuForSecondRound)
 
         print("\n")
         bar = LineSpinner('同学们填报志愿中，请稍后。。。')

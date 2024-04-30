@@ -61,7 +61,7 @@ class SchoolStats:
         #推荐低段学校数：
         numRecommendLow = 7
 
-        #找到录取位次大于等于scoreRank，并且与之最接近的学校：
+        #找到录取位次大于等于scoreRank的学校：
         dfClosestSchool = self.dfSchools[self.dfSchools["录取位次"] >= scoreRank]
 
         #由于公布数据的一些差异，有可能有低分的排名已经超过了可查学校录取数据的最高录取位次，此时直接返回录取位次排名倒数的10个学校：
@@ -69,10 +69,10 @@ class SchoolStats:
             dfClosestSchool = self.dfSchools.tail(10)
             return {"high": pd.DataFrame(), "medium": dfClosestSchool, "low": pd.DataFrame()}
         
+        #找到所有录取位次大于等于scoreRank的学校中，录取位次与scoreRank最接近的学校：
         dfClosestSchool = dfClosestSchool[dfClosestSchool["录取位次"] == dfClosestSchool.iloc[0]["录取位次"]]
         
-
-        #找到比最接近学校高的学校：
+        #找到比最接近学校排名高的学校：
         dfHigherSchool = self.dfSchools[self.dfSchools["录取位次"] < dfClosestSchool["录取位次"].values[0]]
         if(len(dfHigherSchool) < numRecommendHigh):
             dfHigherSchool = dfHigherSchool.tail(len(dfHigherSchool)) 
@@ -80,7 +80,7 @@ class SchoolStats:
             dfHigherSchool = dfHigherSchool.tail(numRecommendHigh)
        
 
-        #找到比最接近学校低的学校：
+        #找到比最接近学校排名低的学校：
         dfLowerSchool = self.dfSchools[self.dfSchools["录取位次"] > dfClosestSchool["录取位次"].values[0]]
         if(len(dfLowerSchool) < numRecommendLow):
             dfLowerSchool = dfLowerSchool.head(len(dfLowerSchool)) 
