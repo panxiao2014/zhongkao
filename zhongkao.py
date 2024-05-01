@@ -171,6 +171,9 @@ studentDispatch = StudentDispatch(stuSet, schoolStats)
 studentDispatch.setup()
 studentDispatch.coreProcess()
 
+#更新策略统计：
+schoolApply.updateStrategyStats(studentDispatch)
+
 #显示我的录取结果：
 print("\n")
 print(GlobalConfig.bcolors.BOLD + "投档结束。按回车键查看录取结果。。。" + GlobalConfig.bcolors.ENDC)
@@ -192,6 +195,7 @@ while(isOver == False):
                 '查看各学校录取结果',
                 '查看考生信息',
                 '查看一分一段表',
+                '查看填报志愿策略分析结果',
                 '不玩了，结束'
             ]
         }
@@ -219,6 +223,10 @@ while(isOver == False):
     elif(myChoice == "查看一分一段表"):
         print("\n")
         stuSet.showScoreCount()
+        print("\n")
+    elif(myChoice == "查看填报志愿策略分析结果"):
+        print("\n")
+        schoolApply.showStrategyStats()
         print("\n")
 
 # stuSet.showScoreHist("语文")

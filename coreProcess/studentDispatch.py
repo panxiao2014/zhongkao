@@ -14,6 +14,7 @@ class StudentDispatch:
         self.dfSchools = schoolStats.dfSchools
         self.myName = stuSet.myName
         self.myNameTag = stuSet.myNameTag
+
         #一共录取的学生数：
         self.numStudentsAdmitted = 0
 
@@ -139,6 +140,7 @@ class StudentDispatch:
         for i in range(GlobalConfig.ScoreTopGate-1, self.stuSet.privilegeScoreGate-1, -1):
             dfStudents = self.dfStuForSecondRound[self.dfStuForSecondRound['总分'] == i]
             self.studentsDispatch(dfStudents, i)
+
         return
     
 
@@ -232,3 +234,4 @@ class StudentDispatch:
             admitTable = [[admitOrder, admitCode, admitName]]
             admitHeaders = ["录取志愿", "学校代码", "学校名称"]
             print(GlobalConfig.bcolors.CYAN + tabulate(admitTable, showindex="never", headers=admitHeaders, tablefmt="rounded_grid") + GlobalConfig.bcolors.ENDC)
+        return

@@ -27,6 +27,7 @@ HighScoretudentsVariance = 5000
 
 #填报志愿数：
 NumShoolToApply = 7
+OrderMap = {0: "第一志愿", 1: "第二志愿", 2: "第三志愿", 3: "第四志愿", 4: "第五志愿", 5: "第六志愿", 6: "第七志愿"}
 
 #格式化输出颜色：
 class bcolors:
@@ -39,6 +40,3 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
     ENDC = '\033[0m'
-
-
-OrderMap = {0: "第一志愿", 1: "第二志愿", 2: "第三志愿", 3: "第四志愿", 4: "第五志愿", 5: "第六志愿", 6: "第七志愿"}

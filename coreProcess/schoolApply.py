@@ -56,3 +56,14 @@ class SchoolApply:
         self.dfStuForSecondRound = pd.concat([self.dfStuForSecondRound, dfMyData])
         self.stuSet.dfStuForSecondRound = self.dfStuForSecondRound
         return
+    
+
+    def showStrategyStats(self):
+        self.applyStrategySet.showStrategyStats()
+        return
+    
+
+    def updateStrategyStats(self, studentDispatch):        
+        dfAdmittedStudents = studentDispatch.dfStuForSecondRound[self.dfStuForSecondRound["已经录取"] == True]
+        self.applyStrategySet.updateStrategyStats(dfAdmittedStudents)
+        return
