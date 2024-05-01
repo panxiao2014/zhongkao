@@ -1,6 +1,7 @@
 from tabulate import tabulate
 from PyInquirer import prompt
 import pandas as pd
+from progress.spinner import LineSpinner
 
 import config.config as GlobalConfig
 from validators.schoolVal import SchoolValidator
@@ -136,10 +137,14 @@ class StudentDispatch:
         dfTopStudents = self.dfStuForSecondRound[self.dfStuForSecondRound['总分'] >= GlobalConfig.ScoreTopGate]
         self.studentsDispatch(dfTopStudents, GlobalConfig.ScoreTopGate)
 
+        print("\n")
+        bar = LineSpinner('开始投档，请稍后。。。')
+
         #从高分到省重线分，依次投档：
         for i in range(GlobalConfig.ScoreTopGate-1, self.stuSet.privilegeScoreGate-1, -1):
             dfStudents = self.dfStuForSecondRound[self.dfStuForSecondRound['总分'] == i]
             self.studentsDispatch(dfStudents, i)
+            bar.next()
 
         return
     

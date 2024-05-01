@@ -166,6 +166,8 @@ stuSet.saveMyApplying(dictMyApply)
 schoolApply = SchoolApply(stuSet, schoolStats)
 schoolApply.coreProcess()
 
+print("\n")
+
 #投档环节：
 studentDispatch = StudentDispatch(stuSet, schoolStats)
 studentDispatch.setup()
