@@ -41,6 +41,11 @@ class SchoolStats:
         #去掉没有录取位次记录的学校：
         self.dfSchools = self.dfSchools[self.dfSchools["录取位次"] != 0]
 
+        #增加column用于跟踪投档名额：
+        self.dfSchools["统招余额"] = self.dfSchools.apply(lambda row: row['5+2区域统招'] - row['指标到校'] - row["民办校内指标到校"] - row["全市艺体"], axis=1)
+        self.dfSchools["调剂余额"] = self.dfSchools.apply(lambda row: row['5+2区域调剂'], axis=1)
+        self.dfSchools["第二批次招收名额"] = self.dfSchools["统招余额"] + self.dfSchools["调剂余额"]
+
         GlobalConfig.LstSchoolCode = self.dfSchools["学校代码"].tolist()
         return
     
@@ -57,15 +62,15 @@ class SchoolStats:
     #根据分数排名，给出推荐填报学校：
     def recommendSchool(self, scoreRank):
         #推荐高段学校数：
-        numRecommendHigh = 3
+        numRecommendHigh = 4
         #推荐低段学校数：
-        numRecommendLow = 9
+        numRecommendLow = 12
 
         #根据2023录取结果，录取位次可以查到的最大值为14537，并且有超过20个学校都是这个值
         lowestAdmitRank = 14537
 
-        #找到录取位次大于等于scoreRank的学校：
-        dfClosestSchool = self.dfSchools[self.dfSchools["录取位次"] >= scoreRank]
+        #找到录取位次大于等于scoreRank的学校,并优先考虑公办：
+        dfClosestSchool = self.dfSchools[(self.dfSchools["录取位次"] >= scoreRank) & self.dfSchools["公办民办"]=="公办"]
 
         #由于公布数据的一些差异，有可能有低分的排名已经超过了可查学校录取数据的最高录取位次，此时直接返回录取位次排名倒数的10个学校：
         if(len(dfClosestSchool) == 0):

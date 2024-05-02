@@ -25,11 +25,6 @@ class StudentDispatch:
     
 
     def setup(self):
-        #dfSchools, 增加column用于跟踪投档名额：
-        self.dfSchools["统招余额"] = self.dfSchools.apply(lambda row: row['5+2区域统招'] - row['指标到校'] - row["民办校内指标到校"] - row["全市艺体"], axis=1)
-        self.dfSchools["调剂余额"] = self.dfSchools.apply(lambda row: row['5+2区域调剂'], axis=1)
-        self.dfSchools["第二批次招收名额"] = self.dfSchools["统招余额"] + self.dfSchools["调剂余额"]
-
         #dfSchools, 增加column用于记录录取结果：
         for i in range(0, GlobalConfig.NumShoolToApply):
             self.dfSchools[GlobalConfig.OrderMap[i]] = 0
