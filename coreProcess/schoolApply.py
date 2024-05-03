@@ -30,7 +30,7 @@ class SchoolApply:
             return
         
         scoreRank = self.stuSet.getScoreRank(score)
-        recommendSchools = self.schoolStats.recommendSchool(scoreRank)
+        recommendSchools = self.schoolStats.recommendApplySchools(scoreRank)
 
         for index, row in dfStudents.iterrows():
             self.applySchoolForEachStudent(index, scoreRank, recommendSchools)
@@ -42,6 +42,7 @@ class SchoolApply:
         #我的志愿已经填报，先把自己从df中移除：
         dfMyData = self.dfStuForSecondRound.loc[self.dfStuForSecondRound["姓名"] == (self.myName + self.myNameTag)].copy()
         self.dfStuForSecondRound = self.dfStuForSecondRound[self.dfStuForSecondRound["姓名"] != (self.myName + self.myNameTag)]
+
         self.applyStrategySet = ApplyStrategySet(self.stuSet, self.schoolStats, self.dfStuForSecondRound)
 
         print("\n")

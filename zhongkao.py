@@ -109,13 +109,11 @@ input()
 
 
 #根据自己排名列出推荐学校:
-#dictRecommendSchool = schoolStats.recommendSchool(stuSet.getMyScoreRank())
 dictRecommendSchools = schoolStats.recommendApplySchools(stuSet.getMyScoreRank())
 print("\n")
 print("根据您的总分排名，我们向您推荐以下学校：")
-#schoolStats.displayRecommendSchool(dictRecommendSchool)
 schoolStats.displayRecommendSchools(dictRecommendSchools)
-print("其他学校信息，请参考<<schools.2023.xlsx>>。")
+print("(其他学校信息，请参考<<schools.2023.xlsx>>。)")
 
 #开始填报志愿：
 time.sleep(1)

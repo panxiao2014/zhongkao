@@ -126,8 +126,6 @@ class StudentDispatch:
     
 
     def coreProcess(self):
-        dfStudents = self.dfStuForSecondRound[self.dfStuForSecondRound["已经录取"] == False]
-
         #655分以上同学统一处理：
         dfTopStudents = self.dfStuForSecondRound[self.dfStuForSecondRound['总分'] >= GlobalConfig.ScoreTopGate]
         self.studentsDispatch(dfTopStudents, GlobalConfig.ScoreTopGate)
