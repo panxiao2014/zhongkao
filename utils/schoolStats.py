@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from tabulate import tabulate
 from scipy import stats
 import warnings
@@ -57,6 +58,61 @@ class SchoolStats:
     #返回一个精简的学校信息，便于打印：
     def briefSchoolInfo(self, dfShoolInfo):
         return dfShoolInfo[["学校代码", "学校名称", "公办民办", "录取位次", "录取分数线", "录取平均分"]]
+    
+
+
+    def getRecommendSchools(self, scoreRank, dfSchools):
+        dfLowSchool = pd.DataFrame()
+
+        #根据2023录取结果，录取位次可以查到的最大值为14537，并且有超过20个学校都是这个值
+        lowestAdmitRank = 14537
+
+        #medium和low档次最多选四个不同录取位次的学校：
+        maxShoolLevels = 4
+        schoolLevel = 0
+
+        #找到录取位次大于等于scoreRank的学校
+        dfClosestSchool = dfSchools[dfSchools["录取位次"] >= scoreRank]
+
+        #由于公布数据的一些差异，有可能有低分的排名已经超过了可查学校录取数据的最高录取位次，此时直接返回录取位次排名倒数的学校：
+        if(len(dfClosestSchool) == 0):
+            dfClosestSchool = dfSchools[dfSchools["录取位次"] == lowestAdmitRank]
+            dfHigherSchool = dfSchools[self.dfSchools["录取位次"] < lowestAdmitRank].tail(1)
+            return {"high": dfHigherSchool, "medium": dfClosestSchool, "low": dfLowSchool}
+        
+        #找到所有录取位次大于等于scoreRank的学校中，录取位次与scoreRank最接近的学校：
+        dfClosestSchool = dfClosestSchool[dfClosestSchool["录取位次"] == dfClosestSchool.iloc[0]["录取位次"]]
+        
+        #找到比最接近学校排名低的学校：
+        dfLowerSchool = dfSchools[dfSchools["录取位次"] > dfClosestSchool["录取位次"].values[0]]
+        if(len(dfLowerSchool) != 0):
+            groupShool = dfLowerSchool.groupby("录取位次")
+            for admitRank, group in groupShool:
+                dfLowSchool = pd.concat([dfLowSchool, group], ignore_index=True)
+                schoolLevel += 1
+                if(schoolLevel == maxShoolLevels):
+                    break
+
+        #找到比最接近学校排名高的学校：
+        dfHigherSchool = dfSchools[dfSchools["录取位次"] < dfClosestSchool["录取位次"].values[0]]
+        if(len(dfHigherSchool) != 0):
+            dfHigherSchool = dfHigherSchool[dfHigherSchool["录取位次"] == dfHigherSchool.iloc[-1]["录取位次"]]
+
+        return {"high": dfHigherSchool, "medium": dfClosestSchool, "low": dfLowSchool}         
+        
+
+
+
+
+    #根据分数排名，给出推荐填报学校：
+    def recommendApplySchools(self, scoreRank):
+        dfSchoolPublic = self.dfSchools[self.dfSchools["公办民办"]=="公办"]
+        dfSchoolPrivate = self.dfSchools[self.dfSchools["公办民办"]=="民办"]
+
+        dictRecommendSchoolPublic = self.getRecommendSchools(scoreRank, dfSchoolPublic)
+        dictRecommendSchoolPrivate = self.getRecommendSchools(scoreRank, dfSchoolPrivate)
+        return {"公办": dictRecommendSchoolPublic, "民办": dictRecommendSchoolPrivate}
+
     
 
     #根据分数排名，给出推荐填报学校：
@@ -128,6 +184,37 @@ class SchoolStats:
             print(GlobalConfig.bcolors.CYAN + "低段学校：")
             print(GlobalConfig.bcolors.CYAN + tabulate(self.briefSchoolInfo(dictRecommendSchool["low"]), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
         return
+    
+
+    def displayRecommendSchools(self, dictRecommendSchools):
+        dictSchoolPublic = dictRecommendSchools["公办"]
+        dictSchoolPrivate = dictRecommendSchools["民办"]
+
+        print(GlobalConfig.bcolors.PINK + "=================高段学校===============：" + GlobalConfig.bcolors.ENDC)
+        print(GlobalConfig.bcolors.PINK + "公办：" + GlobalConfig.bcolors.ENDC)
+        print(GlobalConfig.bcolors.PINK + tabulate(self.briefSchoolInfo(dictSchoolPublic["high"]), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
+        print("\n")
+        print(GlobalConfig.bcolors.PINK + "民办：" + GlobalConfig.bcolors.ENDC)
+        print(GlobalConfig.bcolors.PINK + tabulate(self.briefSchoolInfo(dictSchoolPrivate["high"]), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
+        print("\n")
+
+        print(GlobalConfig.bcolors.BLUE + "=================匹配学校===============：" + GlobalConfig.bcolors.ENDC)
+        print(GlobalConfig.bcolors.BLUE + "公办：" + GlobalConfig.bcolors.ENDC)
+        print(GlobalConfig.bcolors.BLUE + tabulate(self.briefSchoolInfo(dictSchoolPublic["medium"]), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
+        print("\n")
+        print(GlobalConfig.bcolors.BLUE + "民办：" + GlobalConfig.bcolors.ENDC)
+        print(GlobalConfig.bcolors.BLUE + tabulate(self.briefSchoolInfo(dictSchoolPrivate["medium"]), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
+        print("\n")
+
+        print(GlobalConfig.bcolors.CYAN + "=================低段学校===============：" + GlobalConfig.bcolors.ENDC)
+        print(GlobalConfig.bcolors.CYAN + "公办：" + GlobalConfig.bcolors.ENDC)
+        print(GlobalConfig.bcolors.CYAN + tabulate(self.briefSchoolInfo(dictSchoolPublic["low"]), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
+        print("\n")
+        print(GlobalConfig.bcolors.CYAN + "民办：" + GlobalConfig.bcolors.ENDC)
+        print(GlobalConfig.bcolors.CYAN + tabulate(self.briefSchoolInfo(dictSchoolPrivate["low"]), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
+
+        return
+
     
 
     #显示自己填报的七个志愿：
