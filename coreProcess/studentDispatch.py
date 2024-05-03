@@ -202,7 +202,6 @@ class StudentDispatch:
             stuName = inputName
 
         dfStu = self.dfStuForSecondRound[self.dfStuForSecondRound["姓名"]==stuName].head(1)
-        print(dfStu)
         dfStuBase = dfStu[["姓名", "性别", "类型", "总分"]]
         
         print("考生基本信息：")

@@ -22,39 +22,7 @@ class ApplyStrategySet:
     
 
     #大众型
-    def strategyModerate1(self, index, scoreRank, recommendSchools):
-        #统招还是调剂：
-        stuType = self.dfStuForSecondRound.at[index, "类型"]
-
-        numSchoolFilled = 0
-        dfMediumSchool = recommendSchools["medium"]
-        dfLowShool = recommendSchools["low"]
-        while(numSchoolFilled < GlobalConfig.NumShoolToApply):
-            #调剂生只能填2，4， 6志愿：
-            if(stuType == "调剂" and (numSchoolFilled % 2 == 0)):
-                self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[numSchoolFilled]] = "None"
-                numSchoolFilled += 1
-                continue
-
-            if(len(dfMediumSchool) != 0):
-                self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[numSchoolFilled]] = dfMediumSchool.iloc[0][ "学校代码"]
-                dfMediumSchool = dfMediumSchool.iloc[1:]
-                numSchoolFilled += 1
-                continue
-
-            if(len(dfLowShool) != 0):
-                self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[numSchoolFilled]] = dfLowShool.iloc[0][ "学校代码"]
-                dfLowShool = dfLowShool.iloc[1:]
-                numSchoolFilled += 1
-                continue
-        
-        self.strategyStats["大众型"]["使用次数"] += 1
-        self.dfStuForSecondRound.at[index, "选取策略"] = "大众型"
-        return
-    
-
-    #大众型
-    def strategyModerate(self, index, stuType, recommendSchools):
+    def strategyModerate(self, stuIndex, stuType, recommendSchools):
         lstSchoolCode = ["", "", "", ""]
         lstSchoolCodeLen = len(lstSchoolCode)
 
@@ -93,25 +61,24 @@ class ApplyStrategySet:
                     break
 
         if(stuType == "统招"):
-            self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[0]] = lstSchoolCode[0]
-            self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[1]] = lstSchoolCode[0]
-            self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[2]] = lstSchoolCode[1]
-            self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[3]] = lstSchoolCode[1]
-            self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[4]] = lstSchoolCode[2]
-            self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[5]] = lstSchoolCode[2]
-            self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[6]] = lstSchoolCode[3]
+            self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[0]] = lstSchoolCode[0]
+            self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[1]] = lstSchoolCode[0]
+            self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[2]] = lstSchoolCode[1]
+            self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[3]] = lstSchoolCode[1]
+            self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[4]] = lstSchoolCode[2]
+            self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[5]] = lstSchoolCode[2]
+            self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[6]] = lstSchoolCode[3]
         else:
-            self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[0]] = "None"
-            self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[1]] = lstSchoolCode[0]
-            self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[2]] = "None"
-            self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[3]] = lstSchoolCode[1]
-            self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[4]] = "None"
-            self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[5]] = lstSchoolCode[2]
-            self.dfStuForSecondRound.at[index, GlobalConfig.OrderMap[6]] = "None"          
+            self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[0]] = "None"
+            self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[1]] = lstSchoolCode[0]
+            self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[2]] = "None"
+            self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[3]] = lstSchoolCode[1]
+            self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[4]] = "None"
+            self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[5]] = lstSchoolCode[2]
+            self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[6]] = "None"
         
         self.strategyStats["大众型"]["使用次数"] += 1
-        self.dfStuForSecondRound.at[index, "选取策略"] = "大众型"
-        print(self.dfStuForSecondRound.at[index])
+        self.dfStuForSecondRound.at[stuIndex, "选取策略"] = "大众型"
         return
     
 
