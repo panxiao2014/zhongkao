@@ -21,45 +21,8 @@ class ApplyStrategySet:
         return
     
 
-    #大众型
-    def strategyModerate(self, stuIndex, stuType, recommendSchools):
-        lstSchoolCode = ["", "", "", ""]
-        lstSchoolCodeLen = len(lstSchoolCode)
-
-        dfSchoolMedium = recommendSchools["公办"]["medium"]
-        dfSchoolLow = recommendSchools["公办"]["low"]
-
-        if(len(dfSchoolLow) == 0):
-            dfSchoolMedium = dfSchoolMedium.sample(n = lstSchoolCodeLen)
-            lstIndex = 0
-            for index, row in dfSchoolMedium.iterrows():
-                lstSchoolCode[lstIndex] = row["学校代码"]
-                lstIndex += 1
-        else:
-            lstIndex = 0
-
-            dfSchoolMedium = dfSchoolMedium.sample(n = 1)
-            lstSchoolCode[0] = dfSchoolMedium.iloc[0]["学校代码"]
-            lstIndex += 1
-
-            lowSchoolGroup = dfSchoolLow.groupby("录取位次")
-            lowSchoolGroupSize = lowSchoolGroup.ngroups
-
-            #根据low school有多少不同段位的学校，决定3到7志愿从各段位选取多少学校来填写：
-            dictLowSchoolFillPolicy = {1: [3], 2: [1, 2], 3: [1, 1, 1], 4: [1, 1, 1]}
-            lstLowSchoolFill = dictLowSchoolFillPolicy[lowSchoolGroupSize]
-
-            lstLowSchoolFillIndex = 0
-            for schoolRank, group in lowSchoolGroup:
-                dfSchool = group.sample(n = lstLowSchoolFill[lstLowSchoolFillIndex])
-                for index, row in dfSchool.iterrows():
-                    lstSchoolCode[lstIndex] = row["学校代码"]
-                    lstIndex += 1
-                        
-                lstLowSchoolFillIndex += 1
-                if(lstIndex == lstSchoolCodeLen):
-                    break
-
+    #将选取的学校进行填报，并更新策略统计：
+    def fillShoolCode(self, stuIndex, stuType, lstSchoolCode, strStrategy):
         if(stuType == "统招"):
             self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[0]] = lstSchoolCode[0]
             self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[1]] = lstSchoolCode[0]
@@ -77,13 +40,141 @@ class ApplyStrategySet:
             self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[5]] = lstSchoolCode[2]
             self.dfStuForSecondRound.at[stuIndex, GlobalConfig.OrderMap[6]] = "None"
         
-        self.strategyStats["大众型"]["使用次数"] += 1
-        self.dfStuForSecondRound.at[stuIndex, "选取策略"] = "大众型"
+        self.strategyStats[strStrategy]["使用次数"] += 1
+        self.dfStuForSecondRound.at[stuIndex, "选取策略"] = strStrategy
+        return      
+    
+
+    #大众型
+    def strategyModerate(self, stuIndex, stuType, recommendSchools):
+        lstSchoolCode = ["", "", "", ""]
+        lstSchoolCodeLen = len(lstSchoolCode)
+        schoolChosen = 0
+
+        dfSchoolMedium = recommendSchools["公办"]["medium"]
+        dfSchoolLow = recommendSchools["公办"]["low"]
+
+        if(len(dfSchoolLow) == 0):
+            #没有低段学校推荐，则在匹配段直接选出四个学校：
+            dfSchoolMedium = dfSchoolMedium.sample(n = lstSchoolCodeLen)
+            schoolChosen = 0
+            for index, row in dfSchoolMedium.iterrows():
+                lstSchoolCode[schoolChosen] = row["学校代码"]
+                schoolChosen += 1
+        else:
+            dfSchoolMedium = dfSchoolMedium.sample(n = 1)
+            lstSchoolCode[0] = dfSchoolMedium.iloc[0]["学校代码"]
+            schoolChosen += 1
+
+            lowSchoolGroup = dfSchoolLow.groupby("录取位次")
+            lowSchoolGroupSize = lowSchoolGroup.ngroups
+
+            #根据low school有多少不同段位的学校，决定3到7志愿从各段位选取多少学校来填写：
+            dictLowSchoolFillPolicy = {1: [3], 2: [1, 2], 3: [1, 1, 1], 4: [1, 1, 1]}
+            lstLowSchoolFill = dictLowSchoolFillPolicy[lowSchoolGroupSize]
+
+            lstLowSchoolFillIndex = 0
+            for schoolRank, group in lowSchoolGroup:
+                dfSchool = group.sample(n = lstLowSchoolFill[lstLowSchoolFillIndex])
+                for index, row in dfSchool.iterrows():
+                    lstSchoolCode[schoolChosen] = row["学校代码"]
+                    schoolChosen += 1
+                        
+                lstLowSchoolFillIndex += 1
+                if(schoolChosen == lstSchoolCodeLen):
+                    break
+
+        self.fillShoolCode(stuIndex, stuType, lstSchoolCode, "大众型")
         return
     
 
     #进取型：
-    def strategyAgressive(self, index, stuType, scoreRank, recommendSchools, dictSchoolPublic):
+    def strategyAgressive(self, stuIndex, stuType, scoreRank, recommendSchools, dfHighSchoolPublic):
+        lstSchoolCode = ["", "", "", ""]
+        lstSchoolCodeLen = len(lstSchoolCode)
+        schoolChosen = 0
+
+        #选取高位公办学校：
+        lstSchoolCode[0] = dfHighSchoolPublic.sample(n = 1).iloc[0]["学校代码"]
+        schoolChosen += 1
+
+        dfSchoolMedium = recommendSchools["公办"]["medium"]
+        dfSchoolLow = recommendSchools["公办"]["low"]
+
+        if(len(dfSchoolLow) == 0):
+            dfSchoolMedium = dfSchoolMedium.sample(n = lstSchoolCodeLen-1)
+            for index, row in dfSchoolMedium.iterrows():
+                lstSchoolCode[schoolChosen] = row["学校代码"]
+                schoolChosen += 1
+        else:
+            dfSchoolMedium = dfSchoolMedium.sample(n = 1)
+            lstSchoolCode[1] = dfSchoolMedium.iloc[0]["学校代码"]
+            schoolChosen += 1
+
+            lowSchoolGroup = dfSchoolLow.groupby("录取位次")
+            lowSchoolGroupSize = lowSchoolGroup.ngroups
+
+            #根据low school有多少不同段位的学校，决定3到7志愿从各段位选取多少学校来填写：
+            dictLowSchoolFillPolicy = {1: [2], 2: [1, 1], 3: [1, 1], 4: [1, 1]}
+            lstLowSchoolFill = dictLowSchoolFillPolicy[lowSchoolGroupSize]
+
+            lstLowSchoolFillIndex = 0
+            for schoolRank, group in lowSchoolGroup:
+                dfSchool = group.sample(n = lstLowSchoolFill[lstLowSchoolFillIndex])
+                for index, row in dfSchool.iterrows():
+                    lstSchoolCode[schoolChosen] = row["学校代码"]
+                    schoolChosen += 1
+                        
+                lstLowSchoolFillIndex += 1
+                if(schoolChosen == lstSchoolCodeLen):
+                    break
+
+        self.fillShoolCode(stuIndex, stuType, lstSchoolCode, "进取型")
+        return
+    
+
+    #进取土豪型：
+    def strategyAgressiveRich(self, stuIndex, stuType, scoreRank, recommendSchools, dfHighSchoolPublic):
+        lstSchoolCode = ["", "", "", ""]
+        lstSchoolCodeLen = len(lstSchoolCode)
+        schoolChosen = 0
+
+        dfHighSchoolPrivate = recommendSchools["民办"]["high"]
+        #如果高段有民办，则选民办，否则选公立:
+        if(len(dfHighSchoolPrivate) != 0):
+            lstSchoolCode[0] = dfHighSchoolPrivate.sample(n = 1).iloc[0]["学校代码"]
+        else:
+            lstSchoolCode[0] = dfHighSchoolPublic.sample(n = 1).iloc[0]["学校代码"]
+        schoolChosen += 1
+
+        dfSchoolMediumPublic = recommendSchools["公办"]["medium"]
+        dfSchoolMediumPrivate = recommendSchools["民办"]["medium"]
+        dfSchoolLowPublic = recommendSchools["公办"]["low"]
+        dfSchoolLowPrivate = recommendSchools["民办"]["low"]
+
+        if(len(dfSchoolLowPublic) == 0):
+            #如果没有低段学校，则中段选取一个民办，两个公办：
+            lstSchoolCode[schoolChosen] = dfSchoolMediumPrivate.sample(n = 1).iloc[0]["学校代码"]
+            schoolChosen += 1
+
+            dfSchoolMediumPublic = dfSchoolMediumPublic.sample(n = 2)
+            for index, row in dfSchoolMediumPublic.iterrows():
+                lstSchoolCode[schoolChosen] = row["学校代码"]
+                schoolChosen += 1
+        else:
+            #如果有低段学校，则中段选一个公办，低段选一个公办，一个民办：
+            lstSchoolCode[schoolChosen] = dfSchoolMediumPublic.sample(n = 1).iloc[0]["学校代码"]
+            schoolChosen += 1
+
+            lstSchoolCode[schoolChosen] = dfSchoolLowPublic.sample(n = 1).iloc[0]["学校代码"]
+            schoolChosen += 1
+
+            lstSchoolCode[schoolChosen] = dfSchoolLowPrivate.sample(n = 1).iloc[0]["学校代码"]
+            schoolChosen += 1
+
+        print("{}: {}".format(scoreRank, lstSchoolCode))
+
+        self.fillShoolCode(stuIndex, stuType, lstSchoolCode, "进取土豪型")
         return
     
 
@@ -97,15 +188,15 @@ class ApplyStrategySet:
         #如果有高段公办学校，则有可能选择进取型：
         dfHighSchoolPublic = dictSchoolPublic["high"]
         if(len(dfHighSchoolPublic) != 0):
-            gap = (scoreRank - dfHighSchoolPublic["录取位次"].values[0]) / dfHighSchoolPublic["录取位次"].values[0]
+            gap = (scoreRank - dfHighSchoolPublic["录取位次"].values[0]) / dfHighSchoolPublic["第二批次招收名额"].values[0]
             if(gap <= GlobalConfig.StrategyHighGap):
                 tossCoin = random.randint(1, 100)
                 if(tossCoin <= GlobalConfig.StrategyHighPercent):
                     isRich = random.randint(0, 1)
                     if(isRich == 1):
-                        pass
+                        self.strategyAgressiveRich(index, stuType, scoreRank, recommendSchools, dfHighSchoolPublic)
                     else:
-                        self.strategyAgressive(index, stuType, scoreRank, recommendSchools, dictSchoolPublic)
+                        self.strategyAgressive(index, stuType, scoreRank, recommendSchools, dfHighSchoolPublic)
                         return
 
         self.strategyModerate(index, stuType, recommendSchools)
