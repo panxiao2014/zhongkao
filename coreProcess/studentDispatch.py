@@ -174,7 +174,7 @@ class StudentDispatch:
 
         dfStuAdmit = (self.dfStuForSecondRound.loc[self.dfStuForSecondRound["录取学校代码"] == schoolCode]).copy()
         dfStuAdmit = dfStuAdmit.sort_values(by="总分", ascending=False)
-        dfStuAdmit = dfStuAdmit[["姓名", "性别", "类型", "总分", "录取志愿"]]
+        dfStuAdmit = dfStuAdmit[["姓名", "性别", "类型", "总分", "录取志愿", "选取策略"]]
 
         print("\n")
         print(schoolPlanQuotaStr)
@@ -202,7 +202,7 @@ class StudentDispatch:
             stuName = inputName
 
         dfStu = self.dfStuForSecondRound[self.dfStuForSecondRound["姓名"]==stuName].head(1)
-        dfStuBase = dfStu[["姓名", "性别", "类型", "总分"]]
+        dfStuBase = dfStu[["姓名", "性别", "类型", "总分", "选取策略"]]
         
         print("考生基本信息：")
         print(GlobalConfig.bcolors.CYAN + tabulate(dfStuBase, showindex="never", headers="keys", tablefmt="rounded_outline") + GlobalConfig.bcolors.ENDC)

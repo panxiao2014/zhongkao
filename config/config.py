@@ -29,11 +29,6 @@ HighScoretudentsVariance = 5000
 NumShoolToApply = 7
 OrderMap = {0: "第一志愿", 1: "第二志愿", 2: "第三志愿", 3: "第四志愿", 4: "第五志愿", 5: "第六志愿", 6: "第七志愿"}
 
-#进取型策略里，填报高位学校的门限：
-StrategyHighGap = 0.5
-#符合进取条件的学生中，选择进取策略的比例：
-StrategyHighPercent = 50
-
 #格式化输出颜色：
 class bcolors:
     PINK = '\033[95m'

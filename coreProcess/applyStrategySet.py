@@ -1,7 +1,13 @@
 import random
+import pandas as pd
 from tabulate import tabulate
 
 import config.config as GlobalConfig
+
+#进取型策略里，填报高位学校的门限：
+StrategyHighGap = 0.2
+#符合进取条件的学生中，选择进取策略的比例：
+StrategyHighPercent = 50
 
 class ApplyStrategySet:
     def __init__(self, stuSet, schoolStats, dfStuForSecondRound):
@@ -133,7 +139,7 @@ class ApplyStrategySet:
         return
     
 
-    #进取土豪型：
+    #进取土豪型：如果高位有民办，就填民办，否则填公立。其他志愿，选填一个民办
     def strategyAgressiveRich(self, stuIndex, stuType, scoreRank, recommendSchools, dfHighSchoolPublic):
         lstSchoolCode = ["", "", "", ""]
         lstSchoolCodeLen = len(lstSchoolCode)
@@ -154,11 +160,9 @@ class ApplyStrategySet:
 
         if(len(dfSchoolLowPublic) == 0):
             #如果没有低段学校，则中段选取一个民办，两个公办：
-            lstSchoolCode[schoolChosen] = dfSchoolMediumPrivate.sample(n = 1).iloc[0]["学校代码"]
-            schoolChosen += 1
-
-            dfSchoolMediumPublic = dfSchoolMediumPublic.sample(n = 2)
-            for index, row in dfSchoolMediumPublic.iterrows():
+            dfSelectShools = pd.concat([dfSchoolMediumPublic.sample(n = 2), dfSchoolMediumPrivate.sample(n = 1)])
+            dfSelectShools = dfSelectShools.sample(frac = 1)
+            for index, row in dfSelectShools.iterrows():
                 lstSchoolCode[schoolChosen] = row["学校代码"]
                 schoolChosen += 1
         else:
@@ -166,13 +170,22 @@ class ApplyStrategySet:
             lstSchoolCode[schoolChosen] = dfSchoolMediumPublic.sample(n = 1).iloc[0]["学校代码"]
             schoolChosen += 1
 
-            lstSchoolCode[schoolChosen] = dfSchoolLowPublic.sample(n = 1).iloc[0]["学校代码"]
-            schoolChosen += 1
 
-            lstSchoolCode[schoolChosen] = dfSchoolLowPrivate.sample(n = 1).iloc[0]["学校代码"]
-            schoolChosen += 1
+            lstLowSchool = ["", ""]
+            publicGroup = dfSchoolLowPublic.groupby("录取位次")
+            for rank, group in publicGroup:
+                lstLowSchool[0] = group.sample(n = 1).iloc[0]["学校代码"]
+                break
 
-        print("{}: {}".format(scoreRank, lstSchoolCode))
+            privateGroup = dfSchoolLowPrivate.groupby("录取位次")
+            for rank, group in privateGroup:
+                lstLowSchool[1] = group.sample(n = 1).iloc[0]["学校代码"]
+                break
+
+            random.shuffle(lstLowSchool)
+            lstSchoolCode[schoolChosen] = lstLowSchool[0]
+            schoolChosen += 1
+            lstSchoolCode[schoolChosen] = lstLowSchool[1]
 
         self.fillShoolCode(stuIndex, stuType, lstSchoolCode, "进取土豪型")
         return
@@ -189,9 +202,9 @@ class ApplyStrategySet:
         dfHighSchoolPublic = dictSchoolPublic["high"]
         if(len(dfHighSchoolPublic) != 0):
             gap = (scoreRank - dfHighSchoolPublic["录取位次"].values[0]) / dfHighSchoolPublic["第二批次招收名额"].values[0]
-            if(gap <= GlobalConfig.StrategyHighGap):
+            if(gap <= StrategyHighGap):
                 tossCoin = random.randint(1, 100)
-                if(tossCoin <= GlobalConfig.StrategyHighPercent):
+                if(tossCoin <= StrategyHighPercent):
                     isRich = random.randint(0, 1)
                     if(isRich == 1):
                         self.strategyAgressiveRich(index, stuType, scoreRank, recommendSchools, dfHighSchoolPublic)
