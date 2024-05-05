@@ -198,6 +198,7 @@ while(isOver == False):
                 '查看考生信息',
                 '查看一分一段表',
                 '查看填报志愿策略分析结果',
+                '随机查看滑档学生信息',
                 '不玩了，结束'
             ]
         }
@@ -229,6 +230,10 @@ while(isOver == False):
     elif(myChoice == "查看填报志愿策略分析结果"):
         print("\n")
         schoolApply.showStrategyStats()
+        print("\n")
+    elif(myChoice == "随机查看滑档学生信息"):
+        print("\n")
+        studentDispatch.showFailedStuSample()
         print("\n")
 
 # stuSet.showScoreHist("语文")

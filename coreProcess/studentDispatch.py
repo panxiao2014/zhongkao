@@ -235,3 +235,11 @@ class StudentDispatch:
             admitHeaders = ["录取志愿", "学校代码", "学校名称"]
             print(GlobalConfig.bcolors.CYAN + tabulate(admitTable, showindex="never", headers=admitHeaders, tablefmt="rounded_grid") + GlobalConfig.bcolors.ENDC)
         return
+    
+
+    #随机查看滑档学生的信息：
+    def showFailedStuSample(self):
+        dfStu = self.dfStuForSecondRound[self.dfStuForSecondRound["已经录取"] == False].sample(n = 10)
+        dfStu = dfStu[["姓名", "类型", "排名", "第一志愿", "第二志愿", "第三志愿", "第四志愿", "第五志愿", "第六志愿", "第七志愿"]]
+        print(GlobalConfig.bcolors.CYAN + tabulate(dfStu, showindex="never", headers="keys", tablefmt="rounded_grid") + GlobalConfig.bcolors.ENDC)
+        return

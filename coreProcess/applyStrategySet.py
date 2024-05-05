@@ -9,7 +9,7 @@ StrategyHighGap = 0.2
 #符合进取条件的学生中，选择进取策略的比例：
 StrategyHighPercent = 50
 #总分排名高的学生不采取保守策略，只有低于一定排名的才采取保守：
-StrategyLowRank = 3000
+StrategyLowRank = 300
 #符合保守条件的学生中，选择保守策略的比例：
 StrategyLowPercent = 50
 
@@ -249,7 +249,7 @@ class ApplyStrategySet:
 
                 if(schoolChosen == lstSchoolCodeLen):
                     break
-                
+
             if(schoolChosen == lstSchoolCodeLen):
                 break
             lstLowSchoolFillIndex += 1

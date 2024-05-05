@@ -263,9 +263,9 @@ class StudentSet:
     #获取重高线：在一份一段表中，累计人数达到第二批所有需要通过考试录取的名额总数时，对应的分数即为重点线
     def getPrivilegeScoreGate(self, schoolStats):
         secondRoundStuQuota = schoolStats.getSecondRoundStuQuota()
-        dfScoreCountTemp = self.dfScoreCounts[self.dfScoreCounts["累计"] >= secondRoundStuQuota]
+        dfScoreCountTemp = self.dfScoreCounts[self.dfScoreCounts["累计"] < secondRoundStuQuota]
         
-        self.privilegeScoreGate = dfScoreCountTemp["分数"].max()
+        self.privilegeScoreGate = dfScoreCountTemp["分数"].min()
         return self.privilegeScoreGate
     
 
