@@ -35,5 +35,31 @@ from collections.abc import Mapping
 ```
 # 截图
 
+个人信息：
 
+![个人信息](data/screenshot/个人信息.png)
+
+填报学校推荐：
+
+![个人信息](data/screenshot/推荐.png)
+
+投档：
+
+![推荐](data/screenshot/投档.png)
+
+学校招收统计：
+
+![学校统计](data/screenshot/学校统计.png)
+
+策略分析：
+
+![策略分析](data/screenshot/策略分析.png)
+
+滑档学生抽查：
+
+![滑档查看](data/screenshot/滑档查看.png)
+
+各志愿统计：
+
+![志愿统计](data/screenshot/志愿统计.png)
 
