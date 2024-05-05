@@ -11,4 +11,28 @@
 6. 投档；
 7. 公布自己的录取结果；
 8. 可以继续查看各类统计信息
-9. 
+# 运行
+```
+git clone git@github.com:panxiao2014/zhongkao.git
+pip install -r requirements.txt
+python
+python zhongkao.py
+```
+注：如果运行时遇到以下错误：
+
+>File "C:\Python\zhongkao\Lib\site-packages\prompt_toolkit\styles\from_dict.py", line 9, in \<module\>
+>
+>  from collections import Mapping
+>ImportError: cannot import name 'Mapping' from 'collections' (C:\Users\xiaop\AppData\Local\Programs\Python\Python311\Lib\collections\__init__.py)
+
+解决方法是依路径找到**from_dict.py**，将：
+```
+from collections import Mapping
+```
+改为：
+```
+from collections.abc import Mapping
+```
+
+
+
