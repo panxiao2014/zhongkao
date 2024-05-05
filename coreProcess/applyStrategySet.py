@@ -8,6 +8,10 @@ import config.config as GlobalConfig
 StrategyHighGap = 0.2
 #符合进取条件的学生中，选择进取策略的比例：
 StrategyHighPercent = 50
+#总分排名高的学生不采取保守策略，只有低于一定排名的才采取保守：
+StrategyLowRank = 3000
+#符合保守条件的学生中，选择保守策略的比例：
+StrategyLowPercent = 50
 
 class ApplyStrategySet:
     def __init__(self, stuSet, schoolStats, dfStuForSecondRound):
@@ -191,6 +195,69 @@ class ApplyStrategySet:
         return
     
 
+    #保守型
+    def strategyConservative(self, stuIndex, stuType, scoreRank, recommendSchools, dfLowSchoolPublic):
+        lstSchoolCode = ["", "", "", ""]
+        lstSchoolCodeLen = len(lstSchoolCode)
+        schoolChosen = 0
+
+        lowSchoolGroup = dfLowSchoolPublic.groupby("录取位次")
+        lowSchoolGroupSize = lowSchoolGroup.ngroups
+
+        #根据low school有多少不同段位的学校，决定7个志愿从各段位选取多少学校来填写：
+        dictLowSchoolFillPolicy = {1: [4], 2: [1, 3], 3: [1, 1, 2], 4: [1, 1, 1, 1]}
+        lstLowSchoolFill = dictLowSchoolFillPolicy[lowSchoolGroupSize]
+
+        lstLowSchoolFillIndex = 0
+        for schoolRank, group in lowSchoolGroup:
+            dfSchool = group.sample(n = lstLowSchoolFill[lstLowSchoolFillIndex])
+            for index, row in dfSchool.iterrows():
+                lstSchoolCode[schoolChosen] = row["学校代码"]
+                schoolChosen += 1
+
+            lstLowSchoolFillIndex += 1
+
+        self.fillShoolCode(stuIndex, stuType, lstSchoolCode, "保守型")
+        return
+
+
+    #保守土豪型：选一个公立，三个私立
+    def strategyConservativeRich(self, stuIndex, stuType, scoreRank, recommendSchools, dfLowSchoolPublic, dfLowSchoolPrivate):
+        lstSchoolCode = ["", "", "", ""]
+        lstSchoolCodeLen = len(lstSchoolCode)
+        schoolChosen = 0
+
+        publicGroup = dfLowSchoolPublic.groupby("录取位次")
+        for rank, group in publicGroup:
+            lstSchoolCode[schoolChosen] = group.sample(n = 1).iloc[0]["学校代码"]
+            schoolChosen += 1
+            break
+
+        lowSchoolGroup = dfLowSchoolPrivate.groupby("录取位次")
+        lowSchoolGroupSize = lowSchoolGroup.ngroups
+
+        #根据low school有多少不同段位的学校，决定7个志愿从各段位选取多少学校来填写：
+        dictLowSchoolFillPolicy = {1: [3], 2: [1, 2], 3: [1, 1, 1], 4: [1, 1, 1]}
+        lstLowSchoolFill = dictLowSchoolFillPolicy[lowSchoolGroupSize]
+
+        lstLowSchoolFillIndex = 0
+        for schoolRank, group in lowSchoolGroup:
+            dfSchool = group.sample(n = lstLowSchoolFill[lstLowSchoolFillIndex])
+            for index, row in dfSchool.iterrows():
+                lstSchoolCode[schoolChosen] = row["学校代码"]
+                schoolChosen += 1
+
+                if(schoolChosen == lstSchoolCodeLen):
+                    break
+                
+            if(schoolChosen == lstSchoolCodeLen):
+                break
+            lstLowSchoolFillIndex += 1
+
+        self.fillShoolCode(stuIndex, stuType, lstSchoolCode, "保守土豪型")
+        return           
+    
+
     def applySchool(self, index, scoreRank, recommendSchools):
         #统招还是调剂：
         stuType = self.dfStuForSecondRound.at[index, "类型"]
@@ -198,8 +265,10 @@ class ApplyStrategySet:
         dictSchoolPublic = recommendSchools["公办"]
         dictSchoolPrivate = recommendSchools["民办"]
 
-        #如果有高段公办学校，则有可能选择进取型：
         dfHighSchoolPublic = dictSchoolPublic["high"]
+        dfLowSchoolPublic = dictSchoolPublic["low"]
+
+        #如果有高段公办学校，则有可能选择进取型：
         if(len(dfHighSchoolPublic) != 0):
             gap = (scoreRank - dfHighSchoolPublic["录取位次"].values[0]) / dfHighSchoolPublic["第二批次招收名额"].values[0]
             if(gap <= StrategyHighGap):
@@ -212,6 +281,24 @@ class ApplyStrategySet:
                     else:
                         self.strategyAgressive(index, stuType, scoreRank, recommendSchools, dfHighSchoolPublic)
                         return
+        
+        #如果有低段公办学校，则有可能选择保守型：
+        if(len(dfLowSchoolPublic) != 0 and scoreRank >= StrategyLowRank):
+            tossCoin = random.randint(1, 100)
+            if(tossCoin <= StrategyLowPercent):
+                dfLowSchoolPrivate = dictSchoolPrivate["low"]
+                if(len(dfLowSchoolPrivate) != 0):
+                    #如果低段有民办，则有可能选择保守土豪型：
+                    isRich = random.randint(0, 1)
+                    if(isRich == 1):
+                        self.strategyConservativeRich(index, stuType, scoreRank, recommendSchools, dfLowSchoolPublic, dfLowSchoolPrivate)
+                        return
+                    else:
+                        self.strategyConservative(index, stuType, scoreRank, recommendSchools, dfLowSchoolPublic)
+                        return
+                else:
+                    self.strategyConservative(index, stuType, scoreRank, recommendSchools, dfLowSchoolPublic)
+                    return
 
         self.strategyModerate(index, stuType, recommendSchools)
         return

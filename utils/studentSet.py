@@ -93,6 +93,7 @@ class StudentSet:
         mySelf["生物"] = [mySelf["生物"]]
         mySelf["地理"] = [mySelf["地理"]]
         mySelf["总分"] = [mySelf["总分"]]
+        mySelf["排名"] = self.myScoreRank
 
         myDf = pd.DataFrame(mySelf)
         self.dfStudents = pd.concat([self.dfStudents, myDf], ignore_index = True)
@@ -207,7 +208,11 @@ class StudentSet:
 
             isGoodScoreDistribution = self.scoreGen.isGoodScoreDistribution(self.dfScoreCounts[["分数", "累计"]].copy())
 
-            bar.next()     
+            bar.next()
+
+        #add cumulative rank to each student:
+        mergedDf = pd.merge(self.dfStudents, self.dfScoreCounts, left_on="总分", right_on="分数", how="left")
+        self.dfStudents["排名"] = mergedDf["累计"]
         return
     
     
