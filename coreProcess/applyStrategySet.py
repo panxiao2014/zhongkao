@@ -208,6 +208,7 @@ class ApplyStrategySet:
                     isRich = random.randint(0, 1)
                     if(isRich == 1):
                         self.strategyAgressiveRich(index, stuType, scoreRank, recommendSchools, dfHighSchoolPublic)
+                        return
                     else:
                         self.strategyAgressive(index, stuType, scoreRank, recommendSchools, dfHighSchoolPublic)
                         return
@@ -229,7 +230,6 @@ class ApplyStrategySet:
             for index, row in orderGroup.items():
                 points = row * self.strategyPoints[index]
                 self.strategyStats[strategy]["得分"] += points
-                print("{}: {}, points {}".format(index, row, points))
             
             self.strategyStats[strategy]["有效指数"] = round(self.strategyStats[strategy]["得分"] / self.strategyStats[strategy]["使用次数"] * 100 / GlobalConfig.NumShoolToApply, 1)
             

@@ -64,9 +64,10 @@ class StudentDispatch:
     #dfGroupedStudents: 在该分数段下，当前志愿里填写该学校的学生集
     #dfStudents: 该分数段的所有学生集
     def dispatchToSchoolWithApplyOrder(self, score, applyOrder, schoolCode, dfGroupedStudents, dfStudents):
-        #1,3,5,7查看统招余额，2，4，6查看调剂余额：
+        #1,3,5,7查看统招余额，2，4，6查看调剂余额。民办没有调剂，只看统招余额
+        schoolType = self.dfSchools.loc[self.dfSchools["学校代码"]==schoolCode, "公办民办"].values[0]
         orderType = ""
-        if(applyOrder % 2 == 0):
+        if(applyOrder % 2 == 0 or schoolType == "民办"):
             orderType = "统招"
         else:
             orderType = "调剂"
@@ -126,12 +127,14 @@ class StudentDispatch:
     
 
     def coreProcess(self):
+        print("\n")
+        bar = LineSpinner('开始投档，请稍后。。。')
+
         #655分以上同学统一处理：
         dfTopStudents = self.dfStuForSecondRound[self.dfStuForSecondRound['总分'] >= GlobalConfig.ScoreTopGate]
         self.studentsDispatch(dfTopStudents, GlobalConfig.ScoreTopGate)
 
-        print("\n")
-        bar = LineSpinner('开始投档，请稍后。。。')
+        bar.next()
 
         #从高分到省重线分，依次投档：
         for i in range(GlobalConfig.ScoreTopGate-1, self.stuSet.privilegeScoreGate-1, -1):
