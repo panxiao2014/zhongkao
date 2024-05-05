@@ -255,8 +255,6 @@ class StudentSet:
         if(totalScore < GlobalConfig.ScoreLowGate):
             totalScore = GlobalConfig.ScoreLowGate
 
-        print("\n")
-        print(GlobalConfig.bcolors.YELLO + "{}".format(totalScore) + GlobalConfig.bcolors.ENDC + "分的累计人数为： " + GlobalConfig.bcolors.YELLO + "{}".format(self.myScoreRank) + GlobalConfig.bcolors.ENDC + "人")
         return
     
 
