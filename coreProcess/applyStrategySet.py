@@ -161,7 +161,7 @@ class ApplyStrategySet:
         dfSchoolMediumPrivate = recommendSchools["民办"]["medium"]
         dfSchoolLowPublic = recommendSchools["公办"]["low"]
         dfSchoolLowPrivate = recommendSchools["民办"]["low"]
-
+        
         if(len(dfSchoolLowPublic) == 0):
             #如果没有低段学校，则中段选取一个民办，两个公办：
             dfSelectShools = pd.concat([dfSchoolMediumPublic.sample(n = 2), dfSchoolMediumPrivate.sample(n = 1)])
@@ -174,22 +174,29 @@ class ApplyStrategySet:
             lstSchoolCode[schoolChosen] = dfSchoolMediumPublic.sample(n = 1).iloc[0]["学校代码"]
             schoolChosen += 1
 
-
             lstLowSchool = ["", ""]
             publicGroup = dfSchoolLowPublic.groupby("录取位次")
-            for rank, group in publicGroup:
-                lstLowSchool[0] = group.sample(n = 1).iloc[0]["学校代码"]
-                break
-
             privateGroup = dfSchoolLowPrivate.groupby("录取位次")
-            for rank, group in privateGroup:
-                lstLowSchool[1] = group.sample(n = 1).iloc[0]["学校代码"]
-                break
+            if(len(privateGroup) != 0):
+                for rank, group in publicGroup:
+                    lstLowSchool[0] = group.sample(n = 1).iloc[0]["学校代码"]
+                    break
 
-            random.shuffle(lstLowSchool)
-            lstSchoolCode[schoolChosen] = lstLowSchool[0]
-            schoolChosen += 1
-            lstSchoolCode[schoolChosen] = lstLowSchool[1]
+                privateGroup = dfSchoolLowPrivate.groupby("录取位次")
+                for rank, group in privateGroup:
+                    lstLowSchool[1] = group.sample(n = 1).iloc[0]["学校代码"]
+                    break
+
+                random.shuffle(lstLowSchool)
+                lstSchoolCode[schoolChosen] = lstLowSchool[0]
+                schoolChosen += 1
+                lstSchoolCode[schoolChosen] = lstLowSchool[1]
+            else:
+                #低段没有民办，则选取两个公立
+                dfSchoolLowPublic = dfSchoolLowPublic.sample(n = 2)
+                for index, row  in dfSchoolLowPublic.iterrows():
+                    lstSchoolCode[schoolChosen] = row["学校代码"]
+                    schoolChosen += 1
 
         self.fillShoolCode(stuIndex, stuType, lstSchoolCode, "进取土豪型")
         return
@@ -318,7 +325,7 @@ class ApplyStrategySet:
                 points = row * self.strategyPoints[index]
                 self.strategyStats[strategy]["得分"] += points
             
-            self.strategyStats[strategy]["有效指数"] = round(self.strategyStats[strategy]["得分"] / self.strategyStats[strategy]["使用次数"] * 100 / GlobalConfig.NumShoolToApply, 1)
+            self.strategyStats[strategy]["有效指数"] = round(self.strategyStats[strategy]["得分"] / self.strategyStats[strategy]["使用次数"] * 100 / GlobalConfig.NumShoolToApply, 2)
             
         return
     
