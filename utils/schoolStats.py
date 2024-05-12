@@ -57,11 +57,11 @@ class SchoolStats:
 
     #返回一个精简的学校信息，便于打印：
     def briefSchoolInfo(self, dfShoolInfo):
-        return dfShoolInfo[["学校代码", "学校名称", "公办民办", "录取位次", "录取分数线", "录取平均分"]]
+        return dfShoolInfo[["学校代码", "学校名称", "公办民办", "录取位次", "录取分数线", "录取平均分", "投档等级"]]
     
 
 
-    def getRecommendSchools(self, scoreRank, dfSchools):
+    def getRecommendSchools_orig(self, scoreRank, dfSchools):
         dfLowSchool = pd.DataFrame()
 
         #根据2023录取结果，录取位次可以查到的最大值为14537，并且有超过20个学校都是这个值
@@ -98,7 +98,57 @@ class SchoolStats:
         if(len(dfHigherSchool) != 0):
             dfHigherSchool = dfHigherSchool[dfHigherSchool["录取位次"] == dfHigherSchool.iloc[-1]["录取位次"]]
 
-        return {"high": dfHigherSchool, "medium": dfClosestSchool, "low": dfLowSchool}         
+        return {"high": dfHigherSchool, "medium": dfClosestSchool, "low": dfLowSchool}
+
+
+    def getRecommendSchools(self, scoreRank, dfSchools):
+        #取到投档等级的最高和最低级：
+        applyTopLevel = dfSchools["投档等级"].min()
+        applyBottomLevel = dfSchools["投档等级"].max()
+
+        #找到录取位次大于等于scoreRank的学校
+        dfClosestSchool = dfSchools[dfSchools["录取位次"] >= scoreRank]
+
+        #由于公布数据的一些差异，有可能有低分的排名已经超过了可查学校录取数据的最高录取位次，此时直接返回录取位次排名倒数的学校：
+        if(len(dfClosestSchool) == 0):
+            #根据2023录取结果，录取位次可以查到的最大值为14537，并且有超过20个学校都是这个值
+            lowestAdmitRank = 14537
+            dfClosestSchool = dfSchools[dfSchools["录取位次"] == lowestAdmitRank]
+        
+        #找到匹配学校的投档等级：
+        matchApplyLevel = dfClosestSchool.iloc[0]["投档等级"]
+        
+        #找到投档等级为matchApplyLevel的学校：
+        dfClosestSchool = dfSchools[dfSchools["投档等级"] == matchApplyLevel]
+
+        #找到比matchApplyLevel高一个档次的学校：
+        if(matchApplyLevel == applyTopLevel):
+            dfHigherSchool = pd.DataFrame()
+        else:
+            higherLevel = dfSchools[dfSchools["投档等级"] < matchApplyLevel]["投档等级"].max()
+            dfHigherSchool = dfSchools[dfSchools["投档等级"] == higherLevel]
+
+        #找到比matchApplyLevel低档次的学校，最多找maxShoolLevels个档次：
+        if(matchApplyLevel == applyBottomLevel):
+            dfLowerSchool = pd.DataFrame()
+        else:
+            maxLowShoolLevels = 4
+            schoolLevel = 0
+
+            lowerLevel = dfSchools[dfSchools["投档等级"] > matchApplyLevel]["投档等级"].min()
+            dfLowerSchool = dfSchools[dfSchools["投档等级"] == lowerLevel]
+            schoolLevel += 1
+
+            while(schoolLevel < maxLowShoolLevels):
+                if(lowerLevel == applyBottomLevel):
+                    break
+
+                lowerLevel = dfSchools[dfSchools["投档等级"] > lowerLevel]["投档等级"].min()
+                dfTemp = dfSchools[dfSchools["投档等级"] == lowerLevel]
+                dfLowerSchool = pd.concat([dfLowerSchool, dfTemp], ignore_index=True)
+                schoolLevel += 1
+
+        return {"high": dfHigherSchool, "medium": dfClosestSchool, "low": dfLowerSchool}      
         
 
 
