@@ -11,9 +11,8 @@
 #满分: 710
 
 import random
-import numpy as np
 import pandas as pd
-import scipy.stats as ss
+import warnings
 
 from PyInquirer import prompt
 from validators.scoreVal import ScoreValidator150
@@ -23,155 +22,38 @@ from validators.scoreVal import ScoreValidator60
 from validators.scoreVal import ScoreValidator20
 import config.config as GlobalConfig
 
-MeanRange = 10
-ScaleRange = 4
-SkewRange = 0
 
-
-ScoreControl = {
-    "语文": {
-        "Max": 145,
-        "Min": 30,
-        "Mean": 119,
-        "Scale": 35,
-        "Skew": -1
-    },
-
-    "数学": {
-        "Max": 150,
-        "Min": 40,
-        "Mean": 111,
-        "Scale": 35,
-        "Skew": -2
-    },
-
-    "英语": {
-        "Max": 148,
-        "Min": 30,
-        "Mean": 120,
-        "Scale": 35,
-        "Skew": -2
-    },
-
-    "物理": {
-        "Max": 70,
-        "Min": 20,
-        "Mean": 55,
-        "Scale": 7,
-        "Skew": -1
-    },
-
-    "化学": {
-        "Max": 50,
-        "Min": 20,
-        "Mean": 55,
-        "Scale": 4,
-        "Skew": -1
-    },
-
-    "体育": {
-        "Max": 60,
-        "Min": 30,
-        "Mean": 48,
-        "Scale": 25,
-        "Skew": -1
-    },
-
-    "道法": {
-        "Max": 100,
-        "Min": 30,
-        "Mean": 85,
-        "Scale": 15,
-        "Skew": -1
-    },
-
-    "历史": {
-        "Max": 100,
-        "Min": 20,
-        "Mean": 75,
-        "Scale": 15,
-        "Skew": 0
-    },
-
-    "生物": {
-        "Max": 100,
-        "Min": 20,
-        "Mean": 71,
-        "Scale": 18,
-        "Skew": -1
-    },
-
-    "地理": {
-        "Max": 100,
-        "Min": 20,
-        "Mean": 78,
-        "Scale": 19,
-        "Skew": -1
-    }
-}
 
 class ScoreGen:
-    def __init__(self, stuNumber):
+    def __init__(self, stuNumber, dfStudents):
         self.stuNumber = stuNumber
+
+        warnings.simplefilter(action='ignore', category=UserWarning)
+        self.dfScoreStats = pd.read_excel('data/score.stats.2023.xlsx', dtype={"学校代码": str})
+        warnings.resetwarnings()
+
+        self.dfStudents = dfStudents
         return
     
-    def scoreGen(self, course):
-        scores = ss.pearson3.rvs(loc=random.randint(ScoreControl[course]["Mean"]-MeanRange, ScoreControl[course]["Mean"]+MeanRange), 
-                                 scale=random.randint(ScoreControl[course]["Scale"]-ScaleRange, ScoreControl[course]["Scale"]+ScaleRange), 
-                                 skew=random.randint(ScoreControl[course]["Skew"]-SkewRange, ScoreControl[course]["Skew"]+SkewRange),  
-                                size=self.stuNumber)
+
+    #根据一分一段表，生成每个学生的中考总分：
+    def generateScoresForAllStudents(self):
+        stuIndex = 0
+        for index, row in self.dfScoreStats.iterrows():
+            score = row["分数"]
+            stuNumber = row["人数"]
+            
+            startIdx = stuIndex
+            endIdx = startIdx + stuNumber - 1
+
+            self.dfStudents.loc[startIdx:endIdx, '总分'] = score
+            stuIndex = endIdx + 1
+
+            if(score == GlobalConfig.ScoreBottomGate):
+                break
         
-        dfCourse = pd.DataFrame({course: scores})
-        dfCourse[course] = dfCourse[course].astype(int)
-        dfCourse[course] = np.where(dfCourse[course]<ScoreControl[course]["Min"], ScoreControl[course]["Min"], dfCourse[course])
-        dfCourse[course] = np.where(dfCourse[course]>ScoreControl[course]["Max"], ScoreControl[course]["Max"], dfCourse[course])
+        return
 
-        if(course == "道法" or course == "历史" or course == "生物" or course == "地理"):
-            dfCourse[course] = np.where((dfCourse[course]>=80) & (dfCourse[course]<=100), 20,
-                                        np.where((dfCourse[course]>=70) & (dfCourse[course]<=79), 16,
-                                        np.where((dfCourse[course]>=60) & (dfCourse[course]<=69), 12, 8)))
-        
-        return dfCourse
-          
-    
-    def scoreChinese(self):        
-        return self.scoreGen("语文")
-    
-    
-    def scoreMath(self):
-        return self.scoreGen("数学")
-    
-
-    def scoreEnglish(self):
-        return self.scoreGen("英语")
-    
-
-    def scorePhysics(self):
-        return self.scoreGen("物理")
-    
-
-    def scoreChemistry(self):
-        return self.scoreGen("化学")
-
-
-    def scorePE(self):
-        return self.scoreGen("体育")
-    
-
-    def scorePolitics(self):
-        return self.scoreGen("道法")
-    
-
-    def scoreHistory(self):
-        return self.scoreGen("历史")
-    
-
-    def scoreBiology(self):
-        return self.scoreGen("生物")
-    
-
-    def scoreGeography(self):
-        return self.scoreGen("地理")
     
 
     def genMyScoreAuto(self):
@@ -318,8 +200,3 @@ class ScoreGen:
         myScore["总分"] = myScore["语文"] + myScore["数学"] + myScore["英语"] + myScore["物理"] + myScore["化学"] + myScore["体育"]\
                         + myScore["道法"] + myScore["历史"] + myScore["生物"] + myScore["地理"]
         return myScore
-    
-
-    def isGoodScoreDistribution(self, dfTotalScore):
-        numHighScoreStudents = dfTotalScore.loc[dfTotalScore["分数"]==GlobalConfig.HighScoreGate, "累计"].values[0]
-        return (numHighScoreStudents <= (GlobalConfig.HighScoreStudents+GlobalConfig.HighScoretudentsVariance) and numHighScoreStudents >= (GlobalConfig.HighScoreStudents-GlobalConfig.HighScoretudentsVariance))

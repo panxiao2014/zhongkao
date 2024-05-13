@@ -5,7 +5,7 @@ from tabulate import tabulate
 import config.config as GlobalConfig
 
 #进取型策略里，填报高位学校的门限：
-StrategyHighGap = 0.2
+StrategyHighGap = 0.5
 #符合进取条件的学生中，选择进取策略的比例：
 StrategyHighPercent = 50
 #总分排名高的学生不采取保守策略，只有低于一定排名的才采取保守：

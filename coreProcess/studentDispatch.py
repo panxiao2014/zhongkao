@@ -46,13 +46,9 @@ class StudentDispatch:
     # 3. 语，数，外，物理B卷分数总和高，优先投档
     # 4. 体育成绩高，优先投档
     # 5. 若还没有决出胜负，经研究后处理
-    # 为简化，本程序只执行规则2。如果不能决出胜负，则随机选择决定
+    # 为简化，本程序随机选择决定
     def studentsPK(self, dfGroupedStudents, numQuotaRemain):
-        dfGroupedStudents["partialTotal"] = dfGroupedStudents["语文"] + dfGroupedStudents["数学"] + dfGroupedStudents["英语"]
-        dfGroupedStudents = dfGroupedStudents.sort_values(by="partialTotal", ascending=False)
-
-        dfGroupedStudents = dfGroupedStudents.head(numQuotaRemain)
-        dfGroupedStudents.drop(columns="partialTotal", inplace=True)
+        dfGroupedStudents = dfGroupedStudents.sample(n = numQuotaRemain)
 
         return dfGroupedStudents
     

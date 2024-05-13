@@ -49,7 +49,7 @@ class SchoolApply:
         bar = LineSpinner('同学们填报志愿中，请稍后。。。')
 
         #从高分到普高线分数，依次填报志愿：
-        for i in range(GlobalConfig.ScoreFull, self.privilegeScoreGate-1, -1):
+        for i in range(GlobalConfig.ScoreTopGate, self.privilegeScoreGate-1, -1):
             self.applySchoolForStudents(i)
             bar.next()
 

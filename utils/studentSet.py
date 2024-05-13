@@ -26,7 +26,7 @@ class StudentSet:
         self.stuForSecondRoundNum = 0
         self.dfStuForSecondRound = pd.DataFrame()
 
-        self.scoreGen = ScoreGen(self.stuNumber)
+        self.scoreGen = ScoreGen(self.stuNumber, self.dfStudents)
 
         self.myName = ""
         #append a tag so my name know who is myself in the dataframe:
@@ -75,8 +75,8 @@ class StudentSet:
         scoreLevel = self.myTotalScore
         if(scoreLevel > GlobalConfig.ScoreTopGate):
             scoreLevel = GlobalConfig.ScoreTopGate
-        if(scoreLevel < GlobalConfig.ScoreLowGate):
-            scoreLevel = GlobalConfig.ScoreLowGate
+        if(scoreLevel < GlobalConfig.ScoreBottomGate):
+            scoreLevel = GlobalConfig.ScoreBottomGate
         self.myScoreRank = self.dfScoreCounts.loc[self.dfScoreCounts["分数"] == scoreLevel, "累计"].values[0]  
 
         #change each item in dict into list, so it can be added to the dataframe:
@@ -104,8 +104,6 @@ class StudentSet:
         scoreLevel = score
         if(scoreLevel > GlobalConfig.ScoreTopGate):
             scoreLevel = GlobalConfig.ScoreTopGate
-        if(scoreLevel < GlobalConfig.ScoreLowGate):
-            scoreLevel = GlobalConfig.ScoreLowGate
         return self.dfScoreCounts.loc[self.dfScoreCounts["分数"] == scoreLevel, "累计"].values[0]
     
 
@@ -120,24 +118,9 @@ class StudentSet:
     def generateScoreCount(self):
         scoreStats = self.dfStudents["总分"].value_counts().sort_index(ascending=False)
 
-        #filter score below low gate:
-        scoreStats = scoreStats[scoreStats.index >= GlobalConfig.ScoreLowGate]
-
         self.dfScoreCounts['分数'] = scoreStats.index
         self.dfScoreCounts['人数'] = scoreStats.values
-
-        #merge socres above high gate:
-        self.dfScoreCounts.loc[self.dfScoreCounts['分数'].between(GlobalConfig.ScoreTopGate, GlobalConfig.ScoreFull), '分数'] = GlobalConfig.ScoreTopGate
-
-        self.dfScoreCounts = self.dfScoreCounts.groupby('分数', as_index=False).agg({'人数': 'sum'})
         self.dfScoreCounts = self.dfScoreCounts.sort_values(by='分数', ascending=False)
-
-        #如果本次考试没有人达到GlobalConfig.ScoreTopGate的分数，则把GlobalConfig.ScoreTopGate和本次考试最高分之间的空缺补全：
-        topScore = self.dfScoreCounts.iloc[0]['分数']
-        if(topScore < GlobalConfig.ScoreTopGate):
-            dfTopScoreGap = pd.DataFrame({"分数": range(GlobalConfig.ScoreTopGate, topScore, -1), "人数": 0})
-            self.dfScoreCounts = pd.concat([dfTopScoreGap, self.dfScoreCounts])
-            self.dfScoreCounts = self.dfScoreCounts.sort_values(by='分数', ascending=False)
         return
     
 
@@ -145,70 +128,20 @@ class StudentSet:
         self.dfScoreCounts['累计'] = self.dfScoreCounts['人数'].cumsum()
         self.dfScoreCounts.iloc[0, self.dfScoreCounts.columns.get_loc('累计')] = self.dfScoreCounts.iloc[0, self.dfScoreCounts.columns.get_loc('人数')]
         return
-    
-
-    def generateEachAndTotalScores(self):
-        dfChinese = self.scoreGen.scoreChinese()
-        self.dfStudents = pd.concat([self.dfStudents, dfChinese], axis=1)
-
-        dfMath = self.scoreGen.scoreMath()
-        self.dfStudents = pd.concat([self.dfStudents, dfMath], axis=1)
-
-        dfEnglish = self.scoreGen.scoreEnglish()
-        self.dfStudents = pd.concat([self.dfStudents, dfEnglish], axis=1)
-
-        dfPhysics = self.scoreGen.scorePhysics()
-        self.dfStudents = pd.concat([self.dfStudents, dfPhysics], axis=1)
-
-        dfChemistry = self.scoreGen.scoreChemistry()
-        self.dfStudents = pd.concat([self.dfStudents, dfChemistry], axis=1)
-
-        dfPE = self.scoreGen.scorePE()
-        self.dfStudents = pd.concat([self.dfStudents, dfPE], axis=1)
-
-        dfPolitics = self.scoreGen.scorePolitics()
-        self.dfStudents = pd.concat([self.dfStudents, dfPolitics], axis=1)
-
-        dfHistory = self.scoreGen.scoreHistory()
-        self.dfStudents = pd.concat([self.dfStudents, dfHistory], axis=1)
-    
-        dfBiology = self.scoreGen.scoreBiology()
-        self.dfStudents = pd.concat([self.dfStudents, dfBiology], axis=1)
-
-        dfGeography = self.scoreGen.scoreGeography()
-        self.dfStudents = pd.concat([self.dfStudents, dfGeography], axis=1)
-
-        self.dfStudents["总分"] = self.dfStudents[["语文", "数学", "英语", "物理", "化学", "体育", "道法", "历史", "生物", "地理"]].sum(axis=1)
-        return
      
     
     def generateScores(self):
         print("\n")
         bar = LineSpinner('全市中考成绩统计中，请稍后。。。')
 
-        #generate each student's score, including each subject and total score:
-        self.generateEachAndTotalScores()
+        #generate each student's score
+        self.scoreGen.generateScoresForAllStudents()
 
         #generate score count:
         self.generateScoreCount()
 
         #generate cumulative count for each score:
         self.generateCumulativeScore()
-
-        #check score distribution until we got a good one:
-        isGoodScoreDistribution = self.scoreGen.isGoodScoreDistribution(self.dfScoreCounts[["分数", "累计"]].copy())
-        while(isGoodScoreDistribution != True):
-            self.dfStudents = self.dfStudents.drop(["语文", "数学", "英语", "物理", "化学", "体育", "道法", "历史", "生物", "地理", "总分"], axis=1)
-            del self.dfScoreCounts
-            self.dfScoreCounts = pd.DataFrame(columns = ['分数', '人数'])
-
-            self.generateEachAndTotalScores()
-            self.generateScoreCount()
-            self.generateCumulativeScore()
-
-            isGoodScoreDistribution = self.scoreGen.isGoodScoreDistribution(self.dfScoreCounts[["分数", "累计"]].copy())
-
-            bar.next()
 
         #add cumulative rank to each student:
         mergedDf = pd.merge(self.dfStudents, self.dfScoreCounts, left_on="总分", right_on="分数", how="left")
@@ -249,21 +182,15 @@ class StudentSet:
         print("{}同学, 您本次中考的成绩为：".format(self.myName))
         print(GlobalConfig.bcolors.YELLO + tabulate(myData, showindex="never", headers="keys", tablefmt="double_grid") + GlobalConfig.bcolors.ENDC)
 
-        totalScore = myData.iloc[0]["总分"]
-        if(totalScore > GlobalConfig.ScoreTopGate):
-            totalScore = GlobalConfig.ScoreTopGate
-        if(totalScore < GlobalConfig.ScoreLowGate):
-            totalScore = GlobalConfig.ScoreLowGate
-
         return
     
 
     #获取重高线：在一份一段表中，累计人数达到第二批所有需要通过考试录取的名额总数时，对应的分数即为重点线
     def getPrivilegeScoreGate(self, schoolStats):
         secondRoundStuQuota = schoolStats.getSecondRoundStuQuota()
-        dfScoreCountTemp = self.dfScoreCounts[self.dfScoreCounts["累计"] < secondRoundStuQuota]
+        dfScoreCountTemp = self.dfScoreCounts[self.dfScoreCounts["累计"] <= secondRoundStuQuota]
         
-        self.privilegeScoreGate = dfScoreCountTemp["分数"].min()
+        self.privilegeScoreGate = int(dfScoreCountTemp["分数"].min())
         return self.privilegeScoreGate
     
 

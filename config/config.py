@@ -1,5 +1,6 @@
-#5+2区域报名考生总数。来源于网络搜索：“2022年5+2区域约4.8万考生”
-StudentTotal = 50000
+#根据score.stats.2023.xlsx，只模拟考分500及以上的学生。500以下无法达到重高线，没有模拟的必要：
+StudentTotal = 20385
+ScoreBottomGate = 500
 
 #调剂生数量没有资料。根据5+2区域公布的调剂指标，暂定为低于指标总数4630：
 EdgeStudentTotal = 3000
@@ -7,23 +8,17 @@ EdgeStudentTotal = 3000
 #市直属指标到校总数：
 CityQuotaTotal = 1732
 
+#艺体生总数：
+TalentQuotaTotal = 1744
+
 #所有考生姓名：
 StuNameLst = []
 
 #所有学校的代码：
 LstSchoolCode = []
 
-#艺体生总数：
-TalentQuotaTotal = 1744
-
-ScoreFull = 710
 ScoreTopGate = 655  #655及以上得分合并统计总人数
-ScoreLowGate = 400  #400分以下忽略统计
 
-#based on 2023 score stats, define score and number of students as high score students:
-HighScoreGate = 560
-HighScoreStudents = 13605
-HighScoretudentsVariance = 5000
 
 #填报志愿数：
 NumShoolToApply = 7
