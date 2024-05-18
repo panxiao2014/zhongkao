@@ -41,11 +41,11 @@ from collections.abc import Mapping
 
 填报学校推荐：
 
-![个人信息](data/screenshot/推荐.png)
+![推荐](data/screenshot/推荐.png)
 
 投档：
 
-![推荐](data/screenshot/投档.png)
+![投档](data/screenshot/投档.png)
 
 学校招收统计：
 
