@@ -7,10 +7,12 @@ import warnings
 import config.config as GlobalConfig
 
 class SchoolStats:
-    def __init__(self):
+    def __init__(self, scoreGen):
         warnings.simplefilter(action='ignore', category=UserWarning)
         self.dfSchools = pd.read_excel('data/schools.2023.xlsx', dtype={"学校代码": str})
         warnings.resetwarnings()
+
+        self.scoreGen = scoreGen
 
         #第二批次所有需要通过考试录取的学生总数。包括：
         #按照2023年公布的省重线和一份一段表，重点线553对应的人数为14537
@@ -162,11 +164,27 @@ class SchoolStats:
             print("\n")
 
         print(GlobalConfig.bcolors.BLUE + "=================匹配学校===============：" + GlobalConfig.bcolors.ENDC)
-        print(GlobalConfig.bcolors.BLUE + "公办：" + GlobalConfig.bcolors.ENDC)
-        print(GlobalConfig.bcolors.BLUE + tabulate(self.briefSchoolInfo(dictSchoolPublic["medium"]), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
+        dfMediumPublic = dictSchoolPublic["medium"]
+        numMediumPublicQuota = (dfMediumPublic['第二批次统招额'] + dfMediumPublic['5+2区域调剂']).sum()
+
+        numRankMin = dfMediumPublic['录取位次'].min()
+        dfTemp = self.dfSchools[self.dfSchools['录取位次'] < numRankMin]
+        if(dfTemp.empty):
+            numRankMin = 0
+        else:
+            numRankMin = dfTemp['录取位次'].max()
+        numRankMax = dfMediumPublic['录取位次'].max()
+
+        numMatchStu = self.scoreGen.getMatchStudents(numRankMin, numRankMax)
+        print(GlobalConfig.bcolors.BLUE + "公办：共招收" + str(numMediumPublicQuota) + "人, 该段位共有考生" + str(numMatchStu) + "人" + GlobalConfig.bcolors.ENDC)
+        print(GlobalConfig.bcolors.BLUE + tabulate(self.briefSchoolInfo(dfMediumPublic), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
         print("\n")
-        print(GlobalConfig.bcolors.BLUE + "民办：" + GlobalConfig.bcolors.ENDC)
-        print(GlobalConfig.bcolors.BLUE + tabulate(self.briefSchoolInfo(dictSchoolPrivate["medium"]), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
+
+        dfMediumPrivate = dictSchoolPrivate["medium"]
+        numMediumPrivateQuota = (dfMediumPrivate['第二批次统招额']).sum()
+        print(GlobalConfig.bcolors.BLUE + "民办：共招收" + str(numMediumPrivateQuota
+        ) + "人" + GlobalConfig.bcolors.ENDC)
+        print(GlobalConfig.bcolors.BLUE + tabulate(self.briefSchoolInfo(dfMediumPrivate), showindex="never", headers="keys", tablefmt="heavy_outline") + GlobalConfig.bcolors.ENDC)
         print("\n")
 
         print(GlobalConfig.bcolors.CYAN + "=================低段学校===============：" + GlobalConfig.bcolors.ENDC)

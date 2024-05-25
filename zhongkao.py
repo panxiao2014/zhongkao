@@ -83,7 +83,7 @@ GlobalConfig.StuNameLst.append(stuSet.myName+stuSet.myNameTag)
 stuSet.displayMyScoreAndRank()
 
 #获取重高线：
-schoolStats = SchoolStats()
+schoolStats = SchoolStats(stuSet.scoreGen)
 schoolStats.setupStats()
 privilegeScoreGate = stuSet.getPrivilegeScoreGate(schoolStats)
 stuSet.displayPrivilegeScoreGate()

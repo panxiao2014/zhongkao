@@ -11,7 +11,7 @@ StrategyHighPercent = 50
 #总分排名高的学生不采取保守策略，只有低于一定排名的才采取保守：
 StrategyLowRank = 200
 #符合保守条件的学生中，选择保守策略的比例：
-StrategyLowPercent = 50
+StrategyLowPercent = 30
 
 class ApplyStrategySet:
     def __init__(self, stuSet, schoolStats, dfStuForSecondRound):

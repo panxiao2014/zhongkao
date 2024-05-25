@@ -36,6 +36,13 @@ class ScoreGen:
         return
     
 
+    #根据一个排名区间，得到该区间总共有多少考生：
+    def getMatchStudents(self, numRankMin, numRankMax):
+        dfTemp = self.dfScoreStats[(self.dfScoreStats['累计'] > numRankMin) & (self.dfScoreStats['累计'] <= numRankMax)]
+        return dfTemp['人数'].sum()
+
+    
+
     #根据一分一段表，生成每个学生的中考总分：
     def generateScoresForAllStudents(self):
         stuIndex = 0
