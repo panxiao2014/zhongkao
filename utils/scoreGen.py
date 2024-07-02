@@ -29,7 +29,7 @@ class ScoreGen:
         self.stuNumber = stuNumber
 
         warnings.simplefilter(action='ignore', category=UserWarning)
-        self.dfScoreStats = pd.read_excel('data/score.stats.2023.xlsx', dtype={"学校代码": str})
+        self.dfScoreStats = pd.read_excel('data/2023/score.stats.2023.xlsx', dtype={"学校代码": str})
         warnings.resetwarnings()
 
         self.dfStudents = dfStudents

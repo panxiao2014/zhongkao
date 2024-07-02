@@ -9,7 +9,7 @@ import config.config as GlobalConfig
 class SchoolStats:
     def __init__(self, scoreGen):
         warnings.simplefilter(action='ignore', category=UserWarning)
-        self.dfSchools = pd.read_excel('data/schools.2023.xlsx', dtype={"学校代码": str})
+        self.dfSchools = pd.read_excel('data/2023/schools.2023.xlsx', dtype={"学校代码": str})
         warnings.resetwarnings()
 
         self.scoreGen = scoreGen
