@@ -188,13 +188,16 @@ class StudentDispatch:
             {
                 'type': 'input',
                 'name': 'inputName',
-                'message': "请输入您想要查看考生的姓名：",
+                'message': "请输入您想要查看考生的姓名(输入quit退出)：",
                 'validate': StudentNameValidator
             }
         ]
 
         stuName = ""
         inputName = prompt(questions)['inputName']
+        if(inputName == "quit"):
+            return
+        
         if(inputName == self.stuSet.myName):
             stuName = inputName + self.stuSet.myNameTag
         else:
